@@ -52,16 +52,84 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  //======================
+
+  _addTagButtonClicked(){
+    ChabokPush.get.addTag("FLUTTER");
+  }
+
+  _trackPurchaseButtonClicked(){
+    ChabokPush.get.trackPurchase("Purchase", new ChabokEvent(20000,'RIAL'));
+  }
+
+  _trackAddToCartButtonClicked(){
+    ChabokPush.get.track("AddToCart", <String, dynamic>{
+      'value': 'pID_123'
+    });
+  }
+
+  _setUserAttributesButtonClicked(){
+    ChabokPush.get.setUserAttributes(<String, dynamic>{
+      'firstName': 'Chabok',
+      'lastName': "Realtime Solutions",
+      'age': 4
+    });
+  }
+
+  _publishMessageButtonClicked() {
+    ChabokPush.get.publish(new ChabokMessage("989125336383", "default","Hi dude"));
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Chabok starter for flutter'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+          body: GridView.count(
+            primary: false,
+            padding: const EdgeInsets.all(20.0),
+            crossAxisSpacing: 10.0,
+            crossAxisCount: 2,
+            children: <Widget>[
+              RaisedButton(
+                onPressed: _addTagButtonClicked,
+                child: Text(
+                    'AddTag',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _trackPurchaseButtonClicked,
+                child: const Text(
+                    'TrackPurchase',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _trackAddToCartButtonClicked,
+                child: const Text(
+                    'AddToCart',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _setUserAttributesButtonClicked,
+                child: const Text(
+                    'userAttributes',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _publishMessageButtonClicked,
+                child: const Text(
+                    'publish message',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+            ],
+          )
       ),
     );
   }
