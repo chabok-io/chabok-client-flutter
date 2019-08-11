@@ -20,16 +20,16 @@ class ChabokPush {
     return version;
   }
 
-  static ChabokPush get get {
+  static ChabokPush get shared {
+    if (_singleToneInstance == null){
+      _singleToneInstance = new ChabokPush._();
+    }
+
     return _singleToneInstance;
   }
 
-  static ChabokPush init (appId, apiKey, username, password, senderId, devMode) {
-    if (_singleToneInstance != null){
-      return _singleToneInstance;
-    }
-
-    var state = _channel.invokeMethod("init",<String, dynamic>{
+  static init (appId, apiKey, username, password, senderId, devMode) {
+    _channel.invokeMethod("init",<String, dynamic>{
       'appId': appId,
       'apiKey': apiKey,
       'username': username,
@@ -40,11 +40,6 @@ class ChabokPush {
       print(e);
       throw new Exception(e);
     });
-
-    print(state);
-
-    _singleToneInstance = new ChabokPush._();
-    return _singleToneInstance;
   }
 
   Future<String> register(String userId){

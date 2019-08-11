@@ -21,11 +21,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    var chabok = ChabokPush.init('APP_ID','API_KEY','USERNAME','PASSWORD','SENDER_ID', true);
+    ChabokPush.init('APP_ID','API_KEY','USERNAME','PASSWORD','SENDER_ID', true);
 
-    chabok.getUserId().then((userId) => chabok.register(userId), onError: (e) => chabok.registerAsGuest());
+    ChabokPush.shared.getUserId().then((userId) => ChabokPush.shared.register(userId), onError: (e) => ChabokPush.shared.registerAsGuest());
 
-    chabok.setOnMessageCallback((message){
+    ChabokPush.shared.setOnMessageCallback((message){
       print('------------------->>>>>>>>>>> ' + message);
     });
 
@@ -55,21 +55,21 @@ class _MyAppState extends State<MyApp> {
   //======================
 
   _addTagButtonClicked(){
-    ChabokPush.get.addTag("FLUTTER");
+    ChabokPush.shared.addTag("FLUTTER");
   }
 
   _trackPurchaseButtonClicked(){
-    ChabokPush.get.trackPurchase("Purchase", new ChabokEvent(20000,'RIAL'));
+    ChabokPush.shared.trackPurchase("Purchase", new ChabokEvent(20000,'RIAL'));
   }
 
   _trackAddToCartButtonClicked(){
-    ChabokPush.get.track("AddToCart", <String, dynamic>{
+    ChabokPush.shared.track("AddToCart", <String, dynamic>{
       'value': 'pID_123'
     });
   }
 
   _setUserAttributesButtonClicked(){
-    ChabokPush.get.setUserAttributes(<String, dynamic>{
+    ChabokPush.shared.setUserAttributes(<String, dynamic>{
       'firstName': 'Chabok',
       'lastName': "Realtime Solutions",
       'age': 4
@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   _publishMessageButtonClicked() {
-    ChabokPush.get.publish(new ChabokMessage("989125336383", "default","Hi dude"));
+    ChabokPush.shared.publish(new ChabokMessage("989125336383", "default","Hi dude"));
   }
 
   @override
