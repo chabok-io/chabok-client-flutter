@@ -1,14 +1,17 @@
 group 'com.chabokpush.flutter.chabokpush'
-version '1.0-SNAPSHOT'
+version '0.1'
 
 buildscript {
     repositories {
         google()
         jcenter()
+        flatDir {
+            dirs 'libs'
+        }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.4.2'
     }
 }
 
@@ -31,4 +34,13 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+    implementation('me.leolin:ShortcutBadger:1.1.22@aar')
+//    implementation('com.adpdigital.push:chabok-lib:2.17.2@aar')
+//    implementation(name:'chabok-lib-2.17.2', ext:'aar')
+    implementation('com.google.android.gms:play-services-gcm:11.0.4')
+    implementation('com.android.installreferrer:installreferrer:1.0')
 }
