@@ -3,6 +3,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:chabokpush/chabokpush.dart';
+import 'package:chabokpush/ChabokEvent.dart';
+import 'package:chabokpush/ChabokMessage.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,21 +16,31 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
 
+
   @override
   void initState() {
     super.initState();
+
+    var chabok = ChabokPush.init('APP_ID','API_KEY','USERNAME','PASSWORD','SENDER_ID', true);
+
+    chabok.getUserId().then((userId) => chabok.register(userId), onError: (e) => chabok.registerAsGuest());
+
+    chabok.setOnMessageCallback((message){
+      print('------------------->>>>>>>>>>> ' + message);
+    });
+
     initPlatformState();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
+    String platformVersion = '0.0.1';
     // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await Chabokpush.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+//    try {
+//      platformVersion = await ChabokPush.platformVersion;
+//    } on PlatformException {
+//      platformVersion = 'Failed to get platform version.';
+//    }
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
