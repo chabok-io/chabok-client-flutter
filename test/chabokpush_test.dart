@@ -16,6 +16,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await Chabokpush.platformVersion, '42');
+    expect(await ChabokPush.platformVersion, '42');
   });
 }
