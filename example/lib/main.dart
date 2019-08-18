@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:chabokpush/chabokpush.dart';
 import 'package:chabokpush/ChabokEvent.dart';
 import 'package:chabokpush/ChabokMessage.dart';
@@ -26,7 +27,22 @@ class _MyAppState extends State<MyApp> {
     ChabokPush.shared.getUserId().then((userId) => ChabokPush.shared.register(userId), onError: (e) => ChabokPush.shared.registerAsGuest());
 
     ChabokPush.shared.setOnMessageCallback((message){
-      print('------------------->>>>>>>>>>> ' + message);
+      print('Got message --> ' + message);
+    });
+
+    ChabokPush.shared.setOnConnectionHandler((status) {
+      print('Connection status = ' + status);
+    });
+
+    ChabokPush.shared.setOnNotificationOpenedHandler((notif) {
+      var notifObject = json.decode(notif);
+
+      print('User intract with notification = ' + notifObject['action'].toString() +
+          ', \n notification payload = ' + notifObject['message'].toString());
+    });
+
+    ChabokPush.shared.setOnShowNotificationHandler((notif) {
+      print('Notificatio show to user' + notif);
     });
 
     initPlatformState();
