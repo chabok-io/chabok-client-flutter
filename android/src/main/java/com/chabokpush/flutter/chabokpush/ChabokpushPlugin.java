@@ -201,6 +201,83 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
 
     chabok.setDevelopment(devMode);
     chabok.addListener(this);
+    chabok.addNotificationHandler(new NotificationHandler(){
+
+      @Override
+      public boolean buildNotification(ChabokNotification message, NotificationCompat.Builder builder) {
+        JSONObject notificationJson = null;
+
+        if (message.getExtras() != null) {
+          Bundle payload = message.getExtras();
+
+          //FCM message data
+          notificationJson = bundleToJson(payload);
+        } else if (message.getMessage() != null) {
+          PushMessage payload = message.getMessage();
+
+          //Chabok message data
+          notificationJson = payload.getData();
+        }
+
+        if (notificationJson != null) {
+          invokeMethodOnUiThread("onShowNotificationHandler", notificationJson.toString());
+        }
+
+        return super.buildNotification(message, builder);
+      }
+
+      @Override
+      public boolean notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction) {
+        JSONObject notificationJson = null;
+
+        if (message.getExtras() != null) {
+          Bundle payload = message.getExtras();
+
+          //FCM message data
+          notificationJson = bundleToJson(payload);
+        } else if (message.getMessage() != null) {
+          PushMessage payload = message.getMessage();
+
+          //Chabok message data
+          notificationJson = payload.getData();
+        }
+
+        JSONObject notificationOpenedjson = new JSONObject();
+
+        JSONObject notifActionJson = getJsonFromNotificationAction(notificationAction);
+
+        try {
+          notificationOpenedjson.put("action", notifActionJson);
+          notificationOpenedjson.put("message", notificationJson);
+        } catch (Exception e){
+          e.printStackTrace();
+        }
+
+        invokeMethodOnUiThread("onNotificationOpenedHandler", notificationOpenedjson.toString());
+
+        return super.notificationOpened(message, notificationAction);
+      }
+    });
+  }
+
+  private JSONObject getJsonFromNotificationAction(ChabokNotificationAction notificationAction) {
+    String notifAction = "OPENED";
+
+    if (notificationAction.type == ChabokNotificationAction.ActionType.ActionTaken){
+      notifAction = "ACTION_TAKEN";
+    } else if (notificationAction.type == ChabokNotificationAction.ActionType.Dismissed) {
+      notifAction = "DISMISSED";
+    }
+
+    JSONObject notifActionJson = new JSONObject();
+    try {
+      notifActionJson.put("type", notifAction);
+      notifActionJson.put("id", notificationAction.actionID);
+      notifActionJson.put("url", notificationAction.actionUrl);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return notifActionJson;
   }
 
   public void registerAsGuest(String guid ,Result result) {
@@ -357,16 +434,11 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
     AdpPushClient.get().resetBadge();
   }
 
-  public void setOnConnectionStatusResult(Result result){
-    this.onConnectionStatusResult = result;
-  }
-
   public void onEvent(AppState state){
 
     final AppState finalState = state;
     this.activity.runOnUiThread(new Runnable() {
       public void run() {
-        Log("=================== onEvent: state = " + finalState + ", this.onRegisterResult = " + onRegisterResult);
         if (finalState == AppState.REGISTERED){
           if ( onRegisterResult == null){
             return;
@@ -415,14 +487,12 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
         connectionStatus = "DISCONNECTED";
     }
 
-    if (this.onConnectionStatusResult != null){
-      successCallback(this.onConnectionStatusResult, connectionStatus);
-    }
+    invokeMethodOnUiThread("onConnectionHandler", connectionStatus);
   }
 
   public void onEvent(final PushMessage msg) {
     invokeMethodOnUiThread("onMessageHandler", msg.toJson());
-      }
+  }
 
   public void successCallback(Result result, String message){
     result.success(message);
