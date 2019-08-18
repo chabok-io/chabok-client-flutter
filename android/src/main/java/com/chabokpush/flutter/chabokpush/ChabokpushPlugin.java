@@ -5,15 +5,22 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.app.FlutterActivity;
 
 import android.app.Activity;
 import android.content.Context;
 import java.util.HashMap;
 import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 import com.adpdigital.push.Callback;
 import com.adpdigital.push.AppState;
+import com.adpdigital.push.ChabokMessage;
+import com.adpdigital.push.ChabokNotification;
+import com.adpdigital.push.ChabokNotificationAction;
+import com.adpdigital.push.NotificationHandler;
 import com.adpdigital.push.PushMessage;
 import com.adpdigital.push.ChabokEvent;
 import com.adpdigital.push.AdpPushClient;
@@ -22,11 +29,13 @@ import com.adpdigital.push.ConnectionStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** ChabokpushPlugin */
 public class ChabokpushPlugin extends FlutterRegistrarResponder implements MethodCallHandler {
@@ -34,9 +43,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
   private static final String TAG = "CHK";
   private static Activity activity = null;
 
-  private Result onMessageResult;
   private Result onRegisterResult;
-  private Result onConnectionStatusResult;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
@@ -163,8 +170,6 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
       } catch (JSONException e) {
         e.printStackTrace();
       }
-    } else if (action.equals("setOnConnectionStatusCallback")){
-      this.setOnConnectionStatusResult(result);
     } else {
       result.notImplemented();
     }
@@ -416,36 +421,8 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
   }
 
   public void onEvent(final PushMessage msg) {
-    JSONObject message = new JSONObject();
-
-    try {
-      message.put("id", msg.getId());
-      message.put("body", msg.getBody());
-      message.put("sound", msg.getSound());
-      message.put("sentId", msg.getSentId());
-      message.put("channel", msg.getChannel());
-      message.put("senderId", msg.getSenderId());
-      message.put("expireAt", msg.getExpireAt());
-      message.put("alertText", msg.getAlertText());
-      message.put("createdAt", msg.getCreatedAt());
-      message.put("alertTitle", msg.getAlertTitle());
-      message.put("intentType", msg.getIntentType());
-      message.put("receivedAt", msg.getReceivedAt());
-
-      if (msg.getData() != null) {
-        message.put("data", msg.getData());
+    invokeMethodOnUiThread("onMessageHandler", msg.toJson());
       }
-
-      if (msg.getNotification() != null) {
-        message.put("notification", msg.getNotification());
-      }
-
-      invokeMethodOnUiThread("onMessageHandler", (HashMap) jsonToMap(message));
-
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-  }
 
   public void successCallback(Result result, String message){
     result.success(message);
@@ -515,5 +492,34 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
       list.add(value);
     }
     return list;
+  }
+
+  public static JSONObject objectToJSONObject(Object object){
+    Object json = null;
+    JSONObject jsonObject = null;
+    try {
+      json = new JSONTokener(object.toString()).nextValue();
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    if (json instanceof JSONObject) {
+      jsonObject = (JSONObject) json;
+    }
+    return jsonObject;
+  }
+
+  public JSONObject bundleToJson(Bundle bundle) {
+    JSONObject json = new JSONObject();
+    Set<String> keys = bundle.keySet();
+    for (String key : keys) {
+      try {
+        json.put(key, bundle.get(key));
+        //json.put(key, JSONObject.wrap(bundle.get(key)));
+      } catch (JSONException e) {
+
+      }
+    }
+
+    return json;
   }
 }
