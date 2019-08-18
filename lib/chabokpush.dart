@@ -5,20 +5,22 @@ import 'package:chabokpush/ChabokEvent.dart';
 import 'package:chabokpush/ChabokMessage.dart';
 
 // Handlers for various events
-typedef void onMessageHandler(ChabokMessage message);
+typedef void onMessageHandler(dynamic);
+typedef void onShowNotificationHandler(dynamic);
+typedef void onNotificationOpenedHandler(dynamic);
+typedef void onConnectionHandler(String connectionStatus);
+
 
 class ChabokPush {
   // event handlers
   onMessageHandler _onMessageHandler;
+  onConnectionHandler _onConnectionHandler;
+  onShowNotificationHandler _onShowNotificationHandler;
+  onNotificationOpenedHandler _onNotificationOpenedHandler;
 
-  static ChabokPush _singleToneInstance = null;
+  static ChabokPush _singleToneInstance;
   static const MethodChannel _channel =
       const MethodChannel('chabokpush');
-
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
 
   static ChabokPush get shared {
     if (_singleToneInstance == null){
@@ -151,8 +153,36 @@ class ChabokPush {
     return _channel.invokeMethod("getInstallationId");
   }
 
-  void setOnMessageCallback(Function callback){
+  void setOnMessageCallback(callback){
+    if (callback == null){
+      print("Callback  parameter in setOnMessageCallback method is required.");
+      return;
+    }
     this._onMessageHandler = callback;
+  }
+
+  void setOnNotificationOpenedHandler(Function callback){
+    if (callback == null){
+      print("Callback  parameter in setOnNotificationOpenedHandler method is required.");
+      return;
+    }
+    this._onNotificationOpenedHandler = callback;
+  }
+
+  void setOnShowNotificationHandler(Function callback){
+    if (callback == null){
+      print("Callback  parameter in setOnShowNotificationHandler method is required.");
+      return;
+    }
+    this._onShowNotificationHandler = callback;
+  }
+
+  void setOnConnectionHandler(Function callback){
+    if (callback == null){
+      print("Callback  parameter in setOnConnectionHandler method is required.");
+      return;
+    }
+    this._onConnectionHandler = callback;
   }
 
   ChabokPush._(){
@@ -160,10 +190,23 @@ class ChabokPush {
   }
 
   // Private function that gets called by ObjC/Java
-  Future<Null> _handleMethod(MethodCall call) async {
-    print('ccccaaaaaallllleeeedddddd = ' + call.arguments);
-    if (call.method == 'onMessageHandler'){
-       this._onMessageHandler(call.arguments.cast<String, dynamic>());
+  Future<dynamic> _handleMethod(MethodCall call) async {
+    if (call.method.contains('onMessageHandler')){
+      if (this._onMessageHandler != null){
+         this._onMessageHandler(call.arguments);
+       }
+    } else if (call.method.contains('onConnectionHandler')) {
+      if(this._onConnectionHandler != null) {
+        this._onConnectionHandler(call.arguments);
+      }
+    } else if (call.method.contains('onShowNotificationHandler')) {
+      if (this._onShowNotificationHandler != null){
+        this._onShowNotificationHandler(call.arguments);
+      }
+    } else if (call.method.contains('onNotificationOpenedHandler')) {
+      if (this._onNotificationOpenedHandler != null) {
+        this._onNotificationOpenedHandler(call.arguments);
+      }
     }
     return null;
   }
