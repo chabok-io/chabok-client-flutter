@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -60,13 +61,21 @@ abstract class FlutterRegistrarResponder {
         ((Activity)flutterRegistrar.activeContext()).runOnUiThread(runnable);
     }
 
-    protected void invokeMethodOnUiThread(final String methodName, final HashMap map) {
+    protected void invokeMethodOnUiThread(final String methodName, final String json) {
         final MethodChannel channel = this.channel;
-        Log.d(TAG, "`````````````` invokeMethodOnUiThread: " + channel);
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: invokeMethod = " + methodName + ", map = " + map);
+                channel.invokeMethod(methodName, json);
+            }
+        });
+    }
+
+    protected void invokeMethodOnUiThread(final String methodName, final HashMap map) {
+        final MethodChannel channel = this.channel;
+        runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
                 channel.invokeMethod(methodName, map);
             }
         });
