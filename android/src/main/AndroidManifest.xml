@@ -1,3 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.chabokpush.flutter.chabokpush">
+    <application>
+        <meta-data android:name="com.adpdigital.push.client.PlatformType" android:value="flutter" />
+    </application>
 </manifest>
