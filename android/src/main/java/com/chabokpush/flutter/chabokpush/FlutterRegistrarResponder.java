@@ -1,7 +1,6 @@
 package com.chabokpush.flutter.chabokpush;
 
 import android.app.Activity;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Map;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
-import static XTU.OJW.TAG;
 
 abstract class FlutterRegistrarResponder {
     protected MethodChannel channel;
