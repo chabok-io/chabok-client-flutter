@@ -449,6 +449,8 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
             successData.put("registered", true);
 
             onRegisterResult.success(successData.toString());
+            onRegisterResult = null;
+            
           } catch (JSONException e) {
             e.printStackTrace();
           }
