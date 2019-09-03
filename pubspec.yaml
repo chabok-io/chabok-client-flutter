@@ -1,8 +1,8 @@
 name: chabokpush
 description: A new flutter plugin project.
 version: 0.0.2
-author:
-homepage:
+author: Chabok <info@chabok.io>
+homepage: https://github.com/chabok-io/chabok-client-flutter
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
