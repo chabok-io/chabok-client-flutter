@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    ChabokPush.init('APP_ID','API_KEY','USERNAME','PASSWORD','SENDER_ID', true);
+    ChabokPush.init('chabok-starter','70df4ae2e1fd03518ce3e3b21ee7ca7943577749','chabok-starter','chabok-starter','839879285435', true);
 
     ChabokPush.shared.getUserId().then((userId) => ChabokPush.shared.register(userId), onError: (e) => ChabokPush.shared.registerAsGuest());
 
