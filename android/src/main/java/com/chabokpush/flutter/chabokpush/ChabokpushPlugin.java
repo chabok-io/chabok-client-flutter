@@ -205,22 +205,25 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder implements Metho
 
       @Override
       public boolean buildNotification(ChabokNotification message, NotificationCompat.Builder builder) {
-        JSONObject notificationJson = null;
+        String notificationJson = null;
 
         if (message.getExtras() != null) {
           Bundle payload = message.getExtras();
 
           //FCM message data
-          notificationJson = bundleToJson(payload);
+          JSONObject notificationJsonObject = bundleToJson(payload);
+          notificationJson = notificationJsonObject.toString();
+
         } else if (message.getMessage() != null) {
           PushMessage payload = message.getMessage();
 
           //Chabok message data
-          notificationJson = payload.getData();
+          notificationJson = payload.toJson();
         }
 
+
         if (notificationJson != null) {
-          invokeMethodOnUiThread("onShowNotificationHandler", notificationJson.toString());
+          invokeMethodOnUiThread("onShowNotificationHandler", notificationJson);
         }
 
         return super.buildNotification(message, builder);
