@@ -78,15 +78,28 @@ class ChabokPush {
   //=============== User Attributes
 
   setUserAttributes(dynamic attributes) {
-    _channel.invokeMethod("setUserAttributes", attributes);
+    var _attrs = {};
+    for (var key in attributes.keys) {
+      if (attributes[key].runtimeType == DateTime) {
+        _attrs['@CHKDATE_' + key] = attributes[key].millisecondsSinceEpoch.toString();
+      } else {
+        _attrs[key] = attributes[key];
+      }
+    }
+
+    _channel.invokeMethod("setUserAttributes", _attrs);
   }
 
   unsetUserAttributes(List<String> attributes) {
-    _channel.invokeMethod("unsetUserAttributes", attributes);
+    _channel.invokeMethod("unsetUserAttributes", <String, dynamic> {
+      'attributeValues': attributes
+    });
   }
 
   unsetUserAttribute(String attribute) {
-    _channel.invokeMethod("unsetUserAttributes", [attribute]);
+    _channel.invokeMethod("unsetUserAttributes", <String, dynamic> {
+      'attributeValues': [attribute]
+    });
   }
 
   addToUserAttributeArray(String attributeKey, List<String> attributeValues) {
@@ -99,18 +112,18 @@ class ChabokPush {
   removeFromUserAttributeArray(String attributeKey, List<String> attributeValues) {
     _channel.invokeMethod("removeFromUserAttributeArray", <String, dynamic> {
       'attributeKey': attributeKey,
-      'attributeValue': attributeValues
+      'attributeValues': attributeValues
     });
   }
 
-  incrementUserAttribute(String attributeKey, [int attributeValue=1]) {
+  incrementUserAttribute(String attributeKey, [double attributeValue=1]) {
     _channel.invokeMethod("incrementUserAttribute", <String, dynamic> {
       'attributeKey': attributeKey,
       'attributeValue': attributeValue
     });
   }
 
-  decrementUserAttribute(String attributeKey, [int attributeValue=1]) {
+  decrementUserAttribute(String attributeKey, [double attributeValue=1]) {
     _channel.invokeMethod("decrementUserAttribute", <String, dynamic> {
       'attributeKey': attributeKey,
       'attributeValue': attributeValue
@@ -124,8 +137,17 @@ class ChabokPush {
       throw new Exception("trackName is invalid. Please provide a valid name for track");
     }
 
+    var _data = {};
+    for (var key in arguments.keys) {
+      if (arguments[key].runtimeType == DateTime) {
+        _data['@CHKDATE_' + key] = arguments[key].millisecondsSinceEpoch.toString();
+      } else {
+        _data[key] = arguments[key];
+      }
+    }
+
     var params = <String, dynamic> {
-      'data': arguments,
+      'data': _data,
       'trackName': trackName
     };
 
@@ -145,8 +167,16 @@ class ChabokPush {
       data['currency'] = chabokEvent.currency;
     }
 
+    var _data = {};
     if (chabokEvent.data != null) {
-      data['data'] = chabokEvent.data;
+      for (var key in chabokEvent.data.keys) {
+        if (chabokEvent.data[key].runtimeType == DateTime) {
+          _data['@CHKDATE_' + key] = chabokEvent.data[key].millisecondsSinceEpoch.toString();
+        } else {
+          _data[key] = chabokEvent.data[key];
+        }
+      }
+      data['data'] = _data;
     }
 
     var params = <String, dynamic> {

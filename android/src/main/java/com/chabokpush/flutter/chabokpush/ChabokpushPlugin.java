@@ -14,6 +14,7 @@ import com.adpdigital.push.ChabokEvent;
 import com.adpdigital.push.ChabokNotification;
 import com.adpdigital.push.ChabokNotificationAction;
 import com.adpdigital.push.ConnectionStatus;
+import com.adpdigital.push.Datetime;
 import com.adpdigital.push.NotificationHandler;
 import com.adpdigital.push.PushMessage;
 
@@ -244,33 +245,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 String trackName = arguments.get("trackName").toString();
                 try {
                     JSONObject data = new JSONObject(arguments.get("data").toString());
-                    double revenue = 0;
-                    String currency = null;
-                    JSONObject eventData = null;
-
-                    if (!data.has("revenue")) {
-                        throw new IllegalArgumentException("Invalid revenue");
-                    }
-
-                    revenue = data.getDouble("revenue");
-                    if (data.has("currency")) {
-                        currency = data.getString("currency");
-                    }
-
-                    if (data.has("data")) {
-                        eventData = data.getJSONObject("data");
-                    }
-
-                    ChabokEvent chabokEvent = new ChabokEvent(revenue);
-                    if (currency != null) {
-                        chabokEvent.setRevenue(revenue, currency);
-                    }
-
-                    if (eventData != null) {
-                        chabokEvent.setData(eventData);
-                    }
-
-                    trackPurchase(trackName, chabokEvent);
+                    trackPurchase(trackName, data);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -289,19 +264,28 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 // TODO
                 break;
             case "incrementUserAttribute":
-//                incrementUserAttribute();
+                String attributeKey1 = arguments.get("attributeKey").toString();
+                Double attributesValue1 = (Double) arguments.get("attributeValue");
+                incrementUserAttribute(attributeKey1, attributesValue1);
                 break;
             case "decrementUserAttribute":
-//                decrementUserAttribute();
+                String attributeKey2 = arguments.get("attributeKey").toString();
+                Double attributesValue2 = (Double) arguments.get("attributeValue");
+                decrementUserAttribute(attributeKey2, attributesValue2);
                 break;
             case "addToUserAttributeArray":
-//                addToUserAttributeArray();
+                String attributeKey3 = arguments.get("attributeKey").toString();
+                List<String> attributesValues3 = (List<String>) arguments.get("attributeValues");
+                addToUserAttributeArray(attributeKey3, (String[]) attributesValues3.toArray());
                 break;
             case "removeFromUserAttributeArray":
-//                removeFromUserAttributeArray();
+                String attributeKey4 = arguments.get("attributeKey").toString();
+                List<String> attributesValues4 = (List<String>) arguments.get("attributeValues");
+                removeFromUserAttributeArray(attributeKey4, (String[]) attributesValues4.toArray());
                 break;
             case "unsetUserAttributes":
-//                unsetUserAttributes();
+                List<String> attributesValues5 = (List<String>) arguments.get("attributeValues");
+                unsetUserAttributes((String[]) attributesValues5.toArray());
                 break;
             default:
                 result.notImplemented();
@@ -364,11 +348,73 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     }
 
     public void track(String trackName, JSONObject data) {
-        AdpPushClient.get().track(trackName, data);
+        try {
+            if (data != null) {
+                JSONObject modifiedEvents = new JSONObject();
+                Iterator<String> keys = data.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    if (key.startsWith("@CHKDATE_")) {
+                        String actualKey = key.substring(9);
+                        if (data.get(key) instanceof String) {
+                            modifiedEvents.put(actualKey,
+                                    new Datetime(Long.valueOf(data.getString(key))));
+                        }
+                    } else {
+                        modifiedEvents.put(key, data.get(key));
+                    }
+                }
+                AdpPushClient.get().track(trackName, modifiedEvents);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void trackPurchase(String trackName, ChabokEvent eventData) {
-        AdpPushClient.get().trackPurchase(trackName, eventData);
+    public void trackPurchase(String trackName, JSONObject data) {
+        try {
+            double revenue = 0;
+            String currency = null;
+            JSONObject eventData = null;
+            if (!data.has("revenue")) {
+                throw new IllegalArgumentException("Invalid revenue");
+            }
+            revenue = data.getDouble("revenue");
+            if (data.has("currency")) {
+                currency = data.getString("currency");
+            }
+
+            if (data.has("data")) {
+                eventData = data.getJSONObject("data");
+            }
+
+            ChabokEvent chabokEvent = new ChabokEvent(revenue);
+            if (currency != null) {
+                chabokEvent.setRevenue(revenue, currency);
+            }
+
+            if (eventData != null) {
+                JSONObject modifiedEvents = new JSONObject();
+                Iterator<String> keys = eventData.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    if (key.startsWith("@CHKDATE_")) {
+                        String actualKey = key.substring(9);
+                        if (eventData.get(key) instanceof String) {
+                            modifiedEvents.put(actualKey,
+                                    new Datetime(Long.valueOf(eventData.getString(key))));
+                        }
+                    } else {
+                        modifiedEvents.put(key, eventData.get(key));
+                    }
+                }
+                chabokEvent.setData(modifiedEvents);
+            }
+
+            AdpPushClient.get().trackPurchase(trackName, chabokEvent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addTag(String tagName, final Result result) {
@@ -416,12 +462,27 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
         AdpPushClient.get().appWillOpenUrl(uri);
     }
 
-    public void setUserAttributes(JSONObject attributes) {
-        try {
-            HashMap<String, Object> attributesMap = (HashMap<String, Object>) jsonToMap(attributes);
-            AdpPushClient.get().setUserAttributes(attributesMap);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void setUserAttributes(JSONObject userInfo) {
+        if (userInfo != null) {
+            HashMap<String, Object> userInfoMap = null;
+            try {
+                userInfoMap = (HashMap<String, Object>) jsonToMap(userInfo);
+                HashMap<String, Object> modifiedInfo = new HashMap<>();
+                for (Map.Entry<String, Object> entry : userInfoMap.entrySet()) {
+                    if (entry.getKey().startsWith("@CHKDATE_")) {
+                        String actualKey = entry.getKey().substring(9);
+                        if (entry.getValue() instanceof String) {
+                            modifiedInfo.put(actualKey,
+                                    new Datetime(Long.valueOf((String) entry.getValue())));
+                        }
+                    } else {
+                        modifiedInfo.put(entry.getKey(), entry.getValue());
+                    }
+                }
+                AdpPushClient.get().setUserAttributes(modifiedInfo);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -462,7 +523,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     }
 
     public void unsetUserAttributes(String[] attributes) {
-//        AdpPushClient.get().unsetUserAttributes(attributes);
+        AdpPushClient.get().unsetUserAttributes(attributes);
     }
 
     public void addToUserAttributeArray(String attributeKey, String[] attributeValues) {
