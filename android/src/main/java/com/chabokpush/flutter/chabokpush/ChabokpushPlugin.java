@@ -276,16 +276,18 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
             case "addToUserAttributeArray":
                 String attributeKey3 = arguments.get("attributeKey").toString();
                 List<String> attributesValues3 = (List<String>) arguments.get("attributeValues");
-                addToUserAttributeArray(attributeKey3, (String[]) attributesValues3.toArray());
+                addToUserAttributeArray(attributeKey3,
+                        attributesValues3.toArray(new String[attributesValues3.size()]));
                 break;
             case "removeFromUserAttributeArray":
                 String attributeKey4 = arguments.get("attributeKey").toString();
                 List<String> attributesValues4 = (List<String>) arguments.get("attributeValues");
-                removeFromUserAttributeArray(attributeKey4, (String[]) attributesValues4.toArray());
+                removeFromUserAttributeArray(attributeKey4,
+                        attributesValues4.toArray(new String[attributesValues4.size()]));
                 break;
             case "unsetUserAttributes":
                 List<String> attributesValues5 = (List<String>) arguments.get("attributeValues");
-                unsetUserAttributes((String[]) attributesValues5.toArray());
+                unsetUserAttributes(attributesValues5.toArray(new String[attributesValues5.size()]));
                 break;
             default:
                 result.notImplemented();
