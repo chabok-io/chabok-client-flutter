@@ -19,6 +19,7 @@ class _MyAppState extends State<MyApp> {
 
   Color connectionColor = Colors.red;
   String connectionString = "UNKNOWN";
+  String logString = "";
 
   @override
   void initState() {
@@ -31,6 +32,10 @@ class _MyAppState extends State<MyApp> {
 
     ChabokPush.shared.setOnMessageCallback((message) {
       print('Got message --> ' + message);
+
+      setState(() {
+        logString += '\n' + message;
+      });
     });
 
     ChabokPush.shared.setOnConnectionHandler((status) {
@@ -551,20 +556,23 @@ class _MyAppState extends State<MyApp> {
               Text(
                 'Logs:',
                 style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold
+                    fontFamily: 'Montserrat',
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold
                 )
-              ),
+              )
             ]
           ),
           Row(
             children: [
-              Text('...')
-            ],
+              Text(
+                logString,
+                overflow: TextOverflow.fade,
+              )
+            ]
           )
-        ],
-      ),
+        ]
+      )
     );
 
     return MaterialApp(
