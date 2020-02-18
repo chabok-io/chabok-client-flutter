@@ -234,9 +234,9 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
             case "track": {
                 String trackName = arguments.get("trackName").toString();
                 try {
-                    JSONObject data = new JSONObject(arguments.get("data").toString());
+                    JSONObject data = new JSONObject((Map) arguments.get("data"));
                     track(trackName, data);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
@@ -244,9 +244,9 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
             case "trackPurchase": {
                 String trackName = arguments.get("trackName").toString();
                 try {
-                    JSONObject data = new JSONObject(arguments.get("data").toString());
+                    JSONObject data = new JSONObject((Map) arguments.get("data"));
                     trackPurchase(trackName, data);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
