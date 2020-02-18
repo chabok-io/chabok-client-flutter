@@ -128,7 +128,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   _trackPurchase() {
-    ChabokPush.shared.trackPurchase("Purchase", new ChabokEvent(15000, 'RIAL'));
+    var chabokEvent = new ChabokEvent(15000, 'RIAL');
+    chabokEvent.setData(<String, dynamic> {
+      'purchaseDate': new DateTime.now()
+    });
+    ChabokPush.shared.trackPurchase("Purchase", chabokEvent);
   }
 
   _addToCart() {
