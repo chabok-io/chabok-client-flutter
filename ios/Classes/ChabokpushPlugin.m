@@ -88,9 +88,9 @@ NSString *_lastMessage;
         [self removeTag:tagName withResult:result];
     } else if ([@"setUserAttributes" isEqualToString:method]) {
         [self setUserAttributes:arguments];
-    } else if ([@"unsetUserAttribute" isEqualToString:method]) {
-        NSString *attribute = arguments[@"attributeKey"];
-        [self unsetUserAttribute:attribute];
+    } else if ([@"unsetUserAttributes" isEqualToString:method]) {
+        NSArray<NSString *> *attributeValues = arguments[@"attributeValues"];
+        [self unsetUserAttributes:attributeValues];
     } else if ([@"track" isEqualToString:method]) {
         NSString *trackName = arguments[@"trackName"];
         NSDictionary *eventData = arguments[@"data"];
@@ -109,23 +109,20 @@ NSString *_lastMessage;
         // TODO
     } else if ([@"incrementUserAttribute" isEqualToString:method]) {
         NSString *attributeKey = arguments[@"attributeKey"];
-        NSNumber *attributeValue = arguments[@"atributeValue"];
+        NSNumber *attributeValue = arguments[@"attributeValue"];
         [self incrementUserAttribute:attributeKey withValue:[attributeValue longLongValue]];
     } else if ([@"decrementUserAttribute" isEqualToString:method]) {
         NSString *attributeKey = arguments[@"attributeKey"];
-        NSNumber *attributeValue = arguments[@"atributeValue"];
+        NSNumber *attributeValue = arguments[@"attributeValue"];
         [self decrementUserAttribute:attributeKey withValue:[attributeValue longLongValue]];
     } else if ([@"addToUserAttributeArray" isEqualToString:method]) {
         NSString *attributeKey = arguments[@"attributeKey"];
-        NSString *attributeValue = arguments[@"atributeValue"];
-        [self addToUserAttributeArray:attributeKey withValue:attributeValue];
+        NSArray<NSString *> *attributeValues = arguments[@"attributeValues"];
+        [self addToUserAttributeArray:attributeKey withValues:attributeValues];
     } else if ([@"removeFromUserAttributeArray" isEqualToString:method]) {
         NSString *attributeKey = arguments[@"attributeKey"];
-        NSString *attributeValue = arguments[@"atributeValue"];
-        [self removeFromUserAttributeArray:attributeKey withValue:attributeValue];
-    } else if ([@"unsetUserAttributes" isEqualToString:method]) {
-        // TODO
-//        [self unsetUserAttribute:attribute];
+        NSArray<NSString *> *attributeValues = arguments[@"attributeValues"];
+        [self removeFromUserAttributeArray:attributeKey withValues:attributeValues];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -422,10 +419,10 @@ NSString *_lastMessage;
     [PushClientManager.defaultManager setUserAttributes:[ChabokpushPlugin getFormattedData:userInfo]];
 }
 
--(void) unsetUserAttribute:(NSString *)attribute {
+-(void) unsetUserAttributes:(NSArray<NSString *> *)attributes {
     NSLog(@"unsetUserAttribute() invoked");
     
-    [PushClientManager.defaultManager unsetUserAttribute:attribute];
+    [PushClientManager.defaultManager unsetUserAttributes:attributes];
 }
 
 -(void) incrementUserAttribute:(NSString *)attribute withValue:(long)value {
@@ -440,16 +437,16 @@ NSString *_lastMessage;
     [PushClientManager.defaultManager incrementUserAttributeValue:attribute value:(value * -1)];
 }
 
--(void) addToUserAttributeArray:(NSString *)attribute withValue:(NSString *)value {
+-(void) addToUserAttributeArray:(NSString *)attribute withValues:(NSArray<NSString *> *)values {
     NSLog(@"addToUserAttributeArray() invoked");
     
-    [PushClientManager.defaultManager addToUserAttributeArray:attribute attributeValue:value];
+    [PushClientManager.defaultManager addToUserAttributeArray:attribute attributeValues:values];
 }
 
--(void) removeFromUserAttributeArray:(NSString *)attribute withValue:(NSString *)value {
+-(void) removeFromUserAttributeArray:(NSString *)attribute withValues:(NSArray<NSString *> *)values {
     NSLog(@"removeFromUserAttributeArray() invoked");
     
-    [PushClientManager.defaultManager removeFromUserAttributeArray:attribute attributeValue:value];
+    [PushClientManager.defaultManager removeFromUserAttributeArray:attribute attributeValues:values];
 }
 
 -(void) getUserAttributes:(FlutterResult)result {
