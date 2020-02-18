@@ -322,7 +322,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
             }
             String body = message.getString("content");
             String userId = message.getString("userId");
-            String channel = message.getString("methodChannel");
+            String channel = message.getString("channel");
 
             PushMessage msg = new PushMessage();
 
