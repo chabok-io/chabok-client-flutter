@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>827550617186-2pavpli398554eojje6q4j2g49ilp7rq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.827550617186-2pavpli398554eojje6q4j2g49ilp7rq</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCLEt4opyD5MV2zvrVs4Ihi-dmuED7wPLY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>827550617186</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.adpdigital.Chabok</string>
+	<key>PROJECT_ID</key>
+	<string>chabok-30b0a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>chabok-30b0a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<true/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:827550617186:ios:1db62d0ad4b6e397b98b3b</string>
+	<key>DATABASE_URL</key>
+	<string>https://chabok-30b0a.firebaseio.com</string>
+</dict>
+</plist>

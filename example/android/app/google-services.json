@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "827550617186",
+    "firebase_url": "https://chabok-30b0a.firebaseio.com",
+    "project_id": "chabok-30b0a",
+    "storage_bucket": "chabok-30b0a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827550617186:android:d63510ce09b87640b98b3b",
+        "android_client_info": {
+          "package_name": "com.adpdigital.chabok.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "827550617186-0rprpcfsk2s6vjf0p3ug7tbl2g841p2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtZkDV-oqQ1ca7owGMIdWhGZ7hU9l4V8M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "827550617186-0rprpcfsk2s6vjf0p3ug7tbl2g841p2f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "827550617186-2pavpli398554eojje6q4j2g49ilp7rq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.adpdigital.Chabok"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827550617186:android:d585240355e30c93b98b3b",
+        "android_client_info": {
+          "package_name": "com.example.chaboktest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "827550617186-0rprpcfsk2s6vjf0p3ug7tbl2g841p2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtZkDV-oqQ1ca7owGMIdWhGZ7hU9l4V8M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "827550617186-0rprpcfsk2s6vjf0p3ug7tbl2g841p2f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "827550617186-2pavpli398554eojje6q4j2g49ilp7rq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.adpdigital.Chabok"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

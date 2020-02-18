@@ -1,24 +1,64 @@
 package com.chabokpush.flutter.chabokpush;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.ComponentCallbacks;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.util.Log;
 
 import java.util.HashMap;
-import java.util.Map;
 
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
 
+abstract class FlutterRegistrarResponder implements ActivityAware {
+    private final static boolean DEBUG = true;
+    private final static String TAG = "CHABOK";
 
-abstract class FlutterRegistrarResponder {
-    protected MethodChannel channel;
-    protected PluginRegistry.Registrar flutterRegistrar;
+    protected static final String METHOD_CHANNEL_NAME = "com.chabokpush.flutter/chabokpush";
+
+    protected MethodChannel methodChannel;
+    protected Context context = null;
+    protected Activity activity = null;
+
+    @Override
+    public void onAttachedToActivity(ActivityPluginBinding binding) {
+        Log("onAttachedToActivity() invoked.");
+
+        activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        Log("onDetachedFromActivityForConfigChanges() invoked.");
+
+        activity = null;
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+        Log("onReattachedToActivityForConfigChanges() invoked.");
+
+        activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        Log("onAttachedToActivity() invoked.");
+
+        activity = null;
+    }
 
     /**
      * MethodChannel class is home to success() method used by Result class
      * It has the @UiThread annotation and must be run on UI thread, otherwise a RuntimeException will be thrown
      * This will communicate success back to Dart
      */
-    protected void replySuccess(final MethodChannel.Result reply, final Object response) {
+    protected void replySuccess(final MethodChannel.Result reply,
+                                final Object response) {
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
@@ -32,7 +72,10 @@ abstract class FlutterRegistrarResponder {
      * It has the @UiThread annotation and must be run on UI thread, otherwise a RuntimeException will be thrown
      * This will communicate error back to Dart
      */
-    protected void replyError(final MethodChannel.Result reply, final String tag, final String message, final Object response) {
+    protected void replyError(final MethodChannel.Result reply,
+                              final String tag,
+                              final String message,
+                              final Object response) {
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
@@ -56,11 +99,16 @@ abstract class FlutterRegistrarResponder {
     }
 
     protected void runOnMainThread(final Runnable runnable) {
-        ((Activity)flutterRegistrar.activeContext()).runOnUiThread(runnable);
+        if (activity != null) {
+            activity.runOnUiThread(runnable);
+        } else {
+            Log.e(TAG, "Error ~> runOnMainThread() invoked before onAttachedToActivity()");
+        }
     }
 
-    protected void invokeMethodOnUiThread(final String methodName, final String json) {
-        final MethodChannel channel = this.channel;
+    protected void invokeMethodOnUiThread(final String methodName,
+                                          final String json) {
+        final MethodChannel channel = this.methodChannel;
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
@@ -69,13 +117,20 @@ abstract class FlutterRegistrarResponder {
         });
     }
 
-    protected void invokeMethodOnUiThread(final String methodName, final HashMap map) {
-        final MethodChannel channel = this.channel;
+    protected void invokeMethodOnUiThread(final String methodName,
+                                          final HashMap map) {
+        final MethodChannel channel = this.methodChannel;
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
                 channel.invokeMethod(methodName, map);
             }
         });
+    }
+
+    protected static void Log(String message) {
+        if (DEBUG) {
+            Log.d(TAG, message);
+        }
     }
 }
