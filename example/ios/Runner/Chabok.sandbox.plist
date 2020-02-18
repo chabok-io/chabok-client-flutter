@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>appId</key>
+	<string>chabok-starter</string>
+	<key>apiKey</key>
+	<string>70df4ae2e1fd03518ce3e3b21ee7ca7943577749</string>
+	<key>username</key>
+	<string>chabok-starter</string>
+	<key>password</key>
+	<string>chabok-starter</string>
+	<key>realtime</key>
+	<true/>
+	<key>pushNotification</key>
+	<true/>
+</dict>
+</plist>

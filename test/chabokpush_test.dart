@@ -5,6 +5,8 @@ import 'package:chabokpush/chabokpush.dart';
 void main() {
   const MethodChannel channel = MethodChannel('chabokpush');
 
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       return '42';
@@ -16,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await ChabokPush.platformVersion, '42');
+    expect(await Chabokpush.platformVersion, '42');
   });
 }
