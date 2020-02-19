@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final TextEditingController userIdController = TextEditingController();
   final TextEditingController tagController = TextEditingController();
 
@@ -23,15 +23,16 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
 
     ChabokPush.shared.getUserId().then((userId) {
-      print('userId = ' + userId);
+      print('userId = $userId');
       userIdController.text = userId;
     });
 
     ChabokPush.shared.setOnMessageCallback((message) {
-      print('Got message --> ' + message);
+      print('Got message ~> $message');
 
       setState(() {
         logString += '\n' + message;
@@ -39,7 +40,7 @@ class _MyAppState extends State<MyApp> {
     });
 
     ChabokPush.shared.setOnConnectionHandler((status) {
-      print('Connection status = ' + status);
+      print('Connection status = $status');
 
       setState(() {
         connectionString = status;
@@ -67,13 +68,31 @@ class _MyAppState extends State<MyApp> {
     ChabokPush.shared.setOnNotificationOpenedHandler((notif) {
       var notifObject = json.decode(notif);
 
-      print('User intract with notification = ' + notifObject['actionType'].toString() +
-          ', \n notification payload = ' + notifObject['message'].toString());
+      print('User intract with notification = $notifObject["actionType"]' +
+            '\nnotification payload = $notifObject["message"]');
     });
 
     ChabokPush.shared.setOnShowNotificationHandler((notif) {
-      print('Notification show to user' + notif);
+      print('Notification show to user $notif');
     });
+  }
+
+  @override
+  void deactivate() {
+    print('deactivate() invoked.');
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    print('dispose() invoked.');
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('state = $state');
   }
 
   //======================

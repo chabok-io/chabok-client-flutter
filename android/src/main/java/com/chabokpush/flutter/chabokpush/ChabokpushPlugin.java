@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,7 +67,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     // depending on the user's project. onAttachedToEngine or registerWith must both be defined
     // in the same class.
     public static void registerWith(Registrar registrar) {
-        Log("registerWith() invoked");
+        logDebug("registerWith() invoked");
 
         if (instance == null) {
             instance = new ChabokpushPlugin();
@@ -76,7 +77,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-        Log("onAttachedToEngine() invoked");
+        logDebug("onAttachedToEngine() invoked");
 
         init(flutterPluginBinding.getApplicationContext(),
                 flutterPluginBinding.getBinaryMessenger());
@@ -84,15 +85,22 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-        Log("onDetachedFromEngine() invoked");
+        logDebug("onDetachedFromEngine() invoked");
 
-        context = null;
         methodChannel.setMethodCallHandler(null);
         methodChannel = null;
 
+        if (activity != null) {
+            activity.clear();
+        }
         activity = null;
+
+        if (context != null) {
+            context.clear();
+        }
         context = null;
 
+        AdpPushClient.get().removeListener(this);
         AdpPushClient.get().dismiss();
     }
 
@@ -103,16 +111,20 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 return;
             }
 
-            this.context = applicationContext;
+            context = new WeakReference<>(applicationContext);
 
             methodChannel = new MethodChannel(messenger, METHOD_CHANNEL_NAME);
             methodChannel.setMethodCallHandler(this);
 
-            chabokInit();
+            postInit();
         }
     }
 
-    private void chabokInit() {
+    private void postInit() {
+        if (context != null && context.get() != null && AdpPushClient.getContext() == null) {
+            AdpPushClient.setApplicationContext(context.get());
+        }
+
         AdpPushClient.get().addListener(this);
         AdpPushClient.get().addNotificationHandler(new NotificationHandler() {
             @Override
@@ -121,7 +133,9 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 coldStartChabokNotification = message;
                 coldStartChabokNotificationAction = null;
 
-                handleNotificationShown();
+                if (isAttachedToHost()) {
+                    handleNotificationShown();
+                }
 
                 return super.buildNotification(message, builder);
             }
@@ -132,7 +146,9 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 coldStartChabokNotification = message;
                 coldStartChabokNotificationAction = notificationAction;
 
-                handleNotificationOpened();
+                if (isAttachedToHost()) {
+                    handleNotificationOpened();
+                }
 
                 return super.notificationOpened(message, notificationAction);
             }
@@ -140,7 +156,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     }
 
     public ChabokpushPlugin() {
-        Log("ChabokpushPlugin() invoked");
+        logDebug("ChabokpushPlugin() invoked");
     }
 
     @Override
@@ -148,7 +164,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
         String method = call.method;
         Map<String, Object> arguments = (Map<String, Object>) call.arguments;
 
-        Log("----------- onMethodCall: action = " + method + " , args = " + arguments);
+        logDebug("----------- onMethodCall: action = " + method + " , args = " + arguments);
 
         switch (method) {
             case "login":
@@ -388,13 +404,13 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
         AdpPushClient.get().addTag(tagName, new Callback() {
             @Override
             public void onSuccess(Object o) {
-                Log("The addTags onSuccess: invoked");
+                logDebug("The addTags onSuccess: invoked");
                 replySuccess(result, "Tag Added");
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                Log("The addTag onFailure: invoked");
+                logDebug("The addTag onFailure: invoked");
                 replyError(result, "-1", throwable.getMessage(), throwable);
             }
         });
@@ -404,13 +420,13 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
         AdpPushClient.get().removeTag(tagName, new Callback() {
             @Override
             public void onSuccess(Object o) {
-                Log("The removeTag onSuccess: invoked");
+                logDebug("The removeTag onSuccess: invoked");
                 replySuccess(result, "Tag removed");
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                Log("The removeTag onFailure: invoked");
+                logDebug("The removeTag onFailure: invoked");
                 replyError(result, "-1", throwable.getMessage(), throwable);
             }
         });
@@ -510,7 +526,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     }
 
     public void onEvent(AppState state) {
-        Log("on AppState received");
+        logDebug("on AppState received");
 
         final AppState finalState = state;
         runOnMainThread(new Runnable() {
@@ -535,31 +551,31 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     }
 
     public void onEvent(final ConnectionStatus status) {
-        Log("on ConnectionStatus received");
+        logDebug("on ConnectionStatus received");
 
         String connectionStatus = null;
         switch (status) {
             case CONNECTED:
-                Log("Connected to the chabok");
+                logDebug("Connected to the chabok");
                 connectionStatus = "CONNECTED";
                 break;
             case CONNECTING:
-                Log("Connecting to the chabok");
+                logDebug("Connecting to the chabok");
                 connectionStatus = "CONNECTING";
                 break;
             case NOT_INITIALIZED:
-                Log("NOT_INITIALIZED");
+                logDebug("NOT_INITIALIZED");
                 connectionStatus = "DISCONNECTED";
                 break;
             case SOCKET_TIMEOUT:
-                Log("SOCKET_TIMEOUT");
+                logDebug("SOCKET_TIMEOUT");
                 connectionStatus = "DISCONNECTED";
                 break;
             case DISCONNECTED:
-                Log("Disconnected");
+                logDebug("Disconnected");
                 connectionStatus = "DISCONNECTED";
             default:
-                Log("Unknown");
+                logDebug("Unknown");
                 connectionStatus = "UNKNOWN";
         }
 
@@ -569,7 +585,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     }
 
     public void onEvent(final PushMessage msg) {
-        Log("on PushMessage received");
+        logDebug("on PushMessage received");
 
         JSONObject message = new JSONObject();
 

@@ -11,7 +11,7 @@ typedef void NotificationOpenedHandler(dynamic);
 typedef void ConnectionHandler(String connectionStatus);
 
 class ChabokPush {
-  static ChabokPush _singleToneInstance;
+  static final ChabokPush _instance = ChabokPush._();
   static const MethodChannel _channel = const MethodChannel('com.chabokpush.flutter/chabokpush');
 
   // event handlers
@@ -24,12 +24,12 @@ class ChabokPush {
     _channel.setMethodCallHandler(_handleMethod);
   }
 
-  static ChabokPush get shared {
-    if (_singleToneInstance == null) {
-      _singleToneInstance = new ChabokPush._();
-    }
+  factory ChabokPush() {
+    return _instance;
+  }
 
-    return _singleToneInstance;
+  static ChabokPush get shared {
+    return ChabokPush();
   }
 
   //=============== User Lifecycle
