@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
     ChabokPush.shared.setOnNotificationOpenedHandler((notif) {
       var notifObject = json.decode(notif);
 
-      print('User intract with notification = ' + notifObject['action'].toString() +
+      print('User intract with notification = ' + notifObject['actionType'].toString() +
           ', \n notification payload = ' + notifObject['message'].toString());
     });
 

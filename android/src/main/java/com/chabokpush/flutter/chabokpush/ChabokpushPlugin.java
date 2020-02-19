@@ -45,15 +45,16 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
         implements FlutterPlugin, MethodCallHandler {
 
     private static ChabokpushPlugin instance;
-    private final Object initLock = new Object();
-    private Result onRegisterResult;
+    private static final Object initLock = new Object();
+    private static Result onRegisterResult;
 
-    private String lastConnectionStatues;
-    private String lastChabokMessage;
+    private static ChabokNotification coldStartChabokNotification;
+    private static ChabokNotificationAction coldStartChabokNotificationAction;
+    private static String lastShownMessageId;
+    private static String lastOpenedMessageId;
 
-    public static ChabokNotification coldStartChabokNotification;
-    public static ChabokNotificationAction coldStartChabokNotificationAction;
-    private String lastMessageId;
+    private static String lastConnectionStatues;
+    private static String lastChabokMessage;
 
     // This static function is optional and equivalent to onAttachedToEngine. It supports the old
     // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
@@ -117,26 +118,10 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
             @Override
             public boolean buildNotification(ChabokNotification message,
                                              NotificationCompat.Builder builder) {
-                String notificationJson = null;
+                coldStartChabokNotification = message;
+                coldStartChabokNotificationAction = null;
 
-                if (message.getExtras() != null) {
-                    Bundle payload = message.getExtras();
-
-                    //FCM message data
-                    JSONObject notificationJsonObject = bundleToJson(payload);
-                    notificationJson = notificationJsonObject.toString();
-
-                } else if (message.getMessage() != null) {
-                    PushMessage payload = message.getMessage();
-
-                    //Chabok message data
-                    notificationJson = payload.toJson();
-                }
-
-                if (notificationJson != null) {
-                    invokeMethodOnUiThread("onShowNotificationHandler",
-                            notificationJson);
-                }
+                handleNotificationShown();
 
                 return super.buildNotification(message, builder);
             }
@@ -144,33 +129,10 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
             @Override
             public boolean notificationOpened(ChabokNotification message,
                                               ChabokNotificationAction notificationAction) {
-                JSONObject notificationJson = null;
+                coldStartChabokNotification = message;
+                coldStartChabokNotificationAction = notificationAction;
 
-                if (message.getExtras() != null) {
-                    Bundle payload = message.getExtras();
-
-                    //FCM message data
-                    notificationJson = bundleToJson(payload);
-                } else if (message.getMessage() != null) {
-                    PushMessage payload = message.getMessage();
-
-                    //Chabok message data
-                    notificationJson = payload.getData();
-                }
-
-                JSONObject notificationOpenedjson = new JSONObject();
-
-                JSONObject notifActionJson = getJsonFromNotificationAction(notificationAction);
-
-                try {
-                    notificationOpenedjson.put("action", notifActionJson);
-                    notificationOpenedjson.put("message", notificationJson);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                invokeMethodOnUiThread("onNotificationOpenedHandler",
-                        notificationOpenedjson.toString());
+                handleNotificationOpened();
 
                 return super.notificationOpened(message, notificationAction);
             }
@@ -258,10 +220,13 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 invokeMethodOnUiThread("onConnectionHandler", lastConnectionStatues);
                 break;
             case "setOnNotificationOpenedHandler":
-                // TODO
+                coldStartChabokNotification = AdpPushClient.get().getLastNotificationData();
+                coldStartChabokNotificationAction = AdpPushClient.get().getLastNotificationAction();
+                handleNotificationOpened();
                 break;
             case "setOnShowNotificationHandler":
-                // TODO
+                coldStartChabokNotification = AdpPushClient.get().getLastNotificationData();
+                handleNotificationShown();
                 break;
             case "incrementUserAttribute":
                 String attributeKey1 = arguments.get("attributeKey").toString();
@@ -606,25 +571,156 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     public void onEvent(final PushMessage msg) {
         Log("on PushMessage received");
 
-        lastChabokMessage = msg.toJson();
+        JSONObject message = new JSONObject();
+
+        try {
+            message.put("id", msg.getId());
+            message.put("body", msg.getBody());
+            message.put("sound", msg.getSound());
+            message.put("sentId", msg.getSentId());
+            message.put("channel", msg.getChannel());
+            message.put("senderId", msg.getSenderId());
+            message.put("expireAt", msg.getExpireAt());
+            message.put("alertText", msg.getAlertText());
+            message.put("createdAt", msg.getCreatedAt());
+            message.put("alertTitle", msg.getAlertTitle());
+            message.put("intentType", msg.getIntentType());
+            message.put("receivedAt", msg.getReceivedAt());
+
+            if (msg.getData() != null) {
+                message.put("data", msg.getData());
+            }
+
+            if (msg.getNotification() != null) {
+                message.put("notification", msg.getNotification());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        lastChabokMessage = message.toString();
 
         invokeMethodOnUiThread("onMessageHandler", lastChabokMessage);
     }
 
-    private static JSONObject getJsonFromNotificationAction(ChabokNotificationAction notificationAction) {
-        String notifAction = "OPENED";
+    private void handleNotificationOpened() {
+        if (coldStartChabokNotificationAction != null &&
+                coldStartChabokNotification != null &&
+                (lastOpenedMessageId == null ||
+                        !lastOpenedMessageId.contentEquals(coldStartChabokNotification.getId()))) {
+            lastOpenedMessageId = coldStartChabokNotification.getId();
+            notificationOpenedEvent(coldStartChabokNotification, coldStartChabokNotificationAction);
+        }
+    }
 
-        if (notificationAction.type == ChabokNotificationAction.ActionType.ActionTaken) {
-            notifAction = "ACTION_TAKEN";
-        } else if (notificationAction.type == ChabokNotificationAction.ActionType.Dismissed) {
-            notifAction = "DISMISSED";
+    private void handleNotificationShown() {
+        if (coldStartChabokNotification != null &&
+                (lastShownMessageId == null ||
+                        !lastShownMessageId.contentEquals(coldStartChabokNotification.getId()))) {
+            lastShownMessageId = coldStartChabokNotification.getId();
+            notificationShownEvent(coldStartChabokNotification);
+        }
+    }
+
+    private void notificationOpenedEvent(ChabokNotification message,
+                                         ChabokNotificationAction notificationAction) {
+        final JSONObject response = getJsonNotificationObject(message, notificationAction);
+        invokeMethodOnUiThread("onNotificationOpenedHandler", response.toString());
+    }
+
+    private void notificationShownEvent(ChabokNotification message) {
+        final JSONObject response = getJsonNotificationObject(message, null);
+        invokeMethodOnUiThread("onShowNotificationHandler", response.toString());
+    }
+
+    private static JSONObject getJsonNotificationObject(ChabokNotification message,
+                                                        ChabokNotificationAction notificationAction) {
+        final JSONObject response = new JSONObject();
+        try {
+            if (notificationAction != null) {
+                if (notificationAction.actionID != null) {
+                    response.put("actionId", notificationAction.actionID);
+                }
+                if (notificationAction.actionUrl != null) {
+                    response.put("actionUrl", notificationAction.actionUrl);
+                }
+
+                if (notificationAction.type == ChabokNotificationAction.ActionType.Opened) {
+                    response.put("actionType", "OPENED");
+                } else if (notificationAction.type == ChabokNotificationAction.ActionType.Dismissed) {
+                    response.put("actionType", "DISMISSED");
+                } else if (notificationAction.type == ChabokNotificationAction.ActionType.ActionTaken) {
+                    response.put("actionType", "ACTION_TAKEN");
+                }
+            } else {
+                response.put("actionType", "SHOWN");
+            }
+
+            JSONObject msgMap = new JSONObject();
+
+            if (message.getTitle() != null) {
+                msgMap.put("title", message.getTitle());
+            }
+            if (message.getId() != null) {
+                msgMap.put("id", message.getId());
+            }
+
+            if (message.getText() != null) {
+                msgMap.put("body", message.getText());
+            }
+            if (message.getTrackId() != null) {
+                msgMap.put("trackId", message.getTrackId());
+            }
+            if (message.getTopicName() != null) {
+                msgMap.put("channel", message.getTopicName());
+            }
+
+            if (message.getSound() != null) {
+                msgMap.put("sound", message.getSound());
+            }
+
+            try {
+                Bundle data = message.getExtras();
+                if (data != null) {
+                    msgMap.put("data", data);
+                } else if (message.getMessage() != null) {
+                    PushMessage payload = message.getMessage();
+                    //Chabok message data
+                    if (payload != null) {
+                        msgMap.put("data", payload.getData());
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            response.put("message", msgMap);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    private static JSONObject getJsonFromNotificationAction(ChabokNotificationAction notificationAction) {
+        String notifAction = "SHOWN";
+        if (notificationAction != null) {
+            if (notificationAction.type == ChabokNotificationAction.ActionType.ActionTaken) {
+                notifAction = "ACTION_TAKEN";
+            } else if (notificationAction.type == ChabokNotificationAction.ActionType.Dismissed) {
+                notifAction = "DISMISSED";
+            } else if (notificationAction.type == ChabokNotificationAction.ActionType.Opened) {
+                notifAction = "OPENED";
+            }
         }
 
         JSONObject notifActionJson = new JSONObject();
         try {
             notifActionJson.put("type", notifAction);
-            notifActionJson.put("id", notificationAction.actionID);
-            notifActionJson.put("url", notificationAction.actionUrl);
+            if (notificationAction != null) {
+                notifActionJson.put("id", notificationAction.actionID);
+                notifActionJson.put("url", notificationAction.actionUrl);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -1,11 +1,7 @@
 package com.chabokpush.flutter.chabokpush;
 
 import android.app.Activity;
-import android.app.Application;
-import android.content.ComponentCallbacks;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.os.Bundle;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -18,11 +14,11 @@ abstract class FlutterRegistrarResponder implements ActivityAware {
     private final static boolean DEBUG = true;
     private final static String TAG = "CHABOK";
 
-    protected static final String METHOD_CHANNEL_NAME = "com.chabokpush.flutter/chabokpush";
+    static final String METHOD_CHANNEL_NAME = "com.chabokpush.flutter/chabokpush";
 
-    protected MethodChannel methodChannel;
-    protected Context context = null;
-    protected Activity activity = null;
+    static MethodChannel methodChannel;
+    Context context = null;
+    Activity activity = null;
 
     @Override
     public void onAttachedToActivity(ActivityPluginBinding binding) {
