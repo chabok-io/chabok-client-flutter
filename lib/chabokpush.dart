@@ -9,6 +9,8 @@ typedef void MessageHandler(dynamic);
 typedef void ShowNotificationHandler(dynamic);
 typedef void NotificationOpenedHandler(dynamic);
 typedef void ConnectionHandler(String connectionStatus);
+typedef void DeepLinkHandler(String deeplink);
+typedef void ReferralHandler(String referralId);
 
 class ChabokPush {
   static final ChabokPush _instance = ChabokPush._();
@@ -19,6 +21,8 @@ class ChabokPush {
   ConnectionHandler _onConnectionHandler;
   ShowNotificationHandler _onShowNotificationHandler;
   NotificationOpenedHandler _onNotificationOpenedHandler;
+  DeepLinkHandler _onDeepLinkHandler;
+  ReferralHandler _onReferralHandler;
 
   ChabokPush._() {
     _channel.setMethodCallHandler(_handleMethod);
@@ -211,7 +215,7 @@ class ChabokPush {
 
   void setOnMessageCallback(callback) {
     if (callback == null) {
-      print("Callback  parameter in setOnMessageCallback method is required.");
+      print("Callback parameter in setOnMessageCallback method is required.");
       return;
     }
 
@@ -222,7 +226,7 @@ class ChabokPush {
 
   void setOnNotificationOpenedHandler(Function callback) {
     if (callback == null) {
-      print("Callback  parameter in setOnNotificationOpenedHandler method is required.");
+      print("Callback parameter in setOnNotificationOpenedHandler method is required.");
       return;
     }
 
@@ -233,7 +237,7 @@ class ChabokPush {
 
   void setOnShowNotificationHandler(Function callback) {
     if (callback == null) {
-      print("Callback  parameter in setOnShowNotificationHandler method is required.");
+      print("Callback parameter in setOnShowNotificationHandler method is required.");
       return;
     }
 
@@ -244,13 +248,35 @@ class ChabokPush {
 
   void setOnConnectionHandler(Function callback) {
     if (callback == null) {
-      print("Callback  parameter in setOnConnectionHandler method is required.");
+      print("Callback parameter in setOnConnectionHandler method is required.");
       return;
     }
 
     _channel.invokeMethod("setOnConnectionHandler");
 
     this._onConnectionHandler = callback;
+  }
+
+  void setOnDeepLinkHandler(Function callback) {
+    if (callback == null) {
+      print("Callback parameter in setOnDeepLinkHandler method is required.");
+      return;
+    }
+
+    _channel.invokeMethod("setOnDeepLinkHandler");
+
+    this._onDeepLinkHandler = callback;
+  }
+
+  void setOnReferralHandler(Function callback) {
+    if (callback == null) {
+      print("Callback parameter in setOnReferralHandler method is required.");
+      return;
+    }
+
+    _channel.invokeMethod("setOnReferralHandler");
+
+    this._onReferralHandler = callback;
   }
 
   // Private function that gets called by ObjC/Java
@@ -270,6 +296,14 @@ class ChabokPush {
     } else if (call.method.contains('onNotificationOpenedHandler')) {
       if (this._onNotificationOpenedHandler != null) {
         this._onNotificationOpenedHandler(call.arguments);
+      }
+    } else if (call.method.contains('setOnDeepLinkHandler')) {
+      if (this._onDeepLinkHandler != null) {
+        this._onDeepLinkHandler(call.arguments);
+      }
+    } else if (call.method.contains('setOnReferralHandler')) {
+      if (this._onReferralHandler != null) {
+        this._onReferralHandler(call.arguments);
       }
     }
     return null;

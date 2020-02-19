@@ -75,6 +75,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     ChabokPush.shared.setOnShowNotificationHandler((notif) {
       print('Notification show to user $notif');
     });
+
+    ChabokPush.shared.setOnDeepLinkHandler((deeplink) {
+      print('Deeplink = $deeplink');
+    });
+
+    ChabokPush.shared.setOnReferralHandler((referralId) {
+      print('ReferralId = $referralId');
+    });
   }
 
   @override

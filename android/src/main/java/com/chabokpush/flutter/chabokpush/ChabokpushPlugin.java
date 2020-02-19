@@ -3,6 +3,7 @@ package com.chabokpush.flutter.chabokpush;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -15,6 +16,7 @@ import com.adpdigital.push.ChabokNotification;
 import com.adpdigital.push.ChabokNotificationAction;
 import com.adpdigital.push.ConnectionStatus;
 import com.adpdigital.push.Datetime;
+import com.adpdigital.push.DeferredDataListener;
 import com.adpdigital.push.NotificationHandler;
 import com.adpdigital.push.PushMessage;
 
@@ -56,6 +58,9 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
 
     private static String lastConnectionStatues;
     private static String lastChabokMessage;
+
+    private static String deferredDeepLink;
+    private static String referrerId;
 
     // This static function is optional and equivalent to onAttachedToEngine. It supports the old
     // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
@@ -133,9 +138,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 coldStartChabokNotification = message;
                 coldStartChabokNotificationAction = null;
 
-                if (isAttachedToHost()) {
-                    handleNotificationShown();
-                }
+                handleNotificationShown();
 
                 return super.buildNotification(message, builder);
             }
@@ -146,11 +149,30 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 coldStartChabokNotification = message;
                 coldStartChabokNotificationAction = notificationAction;
 
-                if (isAttachedToHost()) {
-                    handleNotificationOpened();
-                }
+                handleNotificationOpened();
 
                 return super.notificationOpened(message, notificationAction);
+            }
+        });
+
+        AdpPushClient.get().setDeferredDataListener(new DeferredDataListener() {
+            @Override
+            public boolean launchReceivedDeeplink(Uri uri) {
+                logDebug("launchReceivedDeeplink");
+
+                if (uri != null) {
+                    deferredDeepLink = uri.toString();
+                    handleDeepLink();
+                }
+                return false;
+            }
+
+            @Override
+            public void onReferralReceived(String id) {
+                logDebug("onReferralReceived");
+
+                referrerId = id;
+                handleReferralId();
             }
         });
     }
@@ -230,10 +252,10 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 break;
             }
             case "setOnMessageCallback":
-                invokeMethodOnUiThread("onMessageHandler", lastChabokMessage);
+                handleChabokMessage();
                 break;
             case "setOnConnectionHandler":
-                invokeMethodOnUiThread("onConnectionHandler", lastConnectionStatues);
+                handleConnectionStaus();
                 break;
             case "setOnNotificationOpenedHandler":
                 coldStartChabokNotification = AdpPushClient.get().getLastNotificationData();
@@ -270,14 +292,20 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 List<String> attributesValues5 = (List<String>) arguments.get("attributeValues");
                 unsetUserAttributes(attributesValues5.toArray(new String[attributesValues5.size()]));
                 break;
+            case "setOnDeepLinkHandler":
+                handleDeepLink();
+                break;
+            case "setOnReferralHandler":
+                handleReferralId();
+                break;
             default:
-                result.notImplemented();
+                replyNotImplemented(result);
                 break;
         }
     }
 
     public void login(String userId, Result result) {
-        this.onRegisterResult = result;
+        onRegisterResult = result;
         AdpPushClient.get().login(userId);
     }
 
@@ -581,7 +609,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
 
         lastConnectionStatues = connectionStatus;
 
-        invokeMethodOnUiThread("onConnectionHandler", lastConnectionStatues);
+        handleConnectionStaus();
     }
 
     public void onEvent(final PushMessage msg) {
@@ -616,37 +644,63 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
 
         lastChabokMessage = message.toString();
 
-        invokeMethodOnUiThread("onMessageHandler", lastChabokMessage);
+        handleChabokMessage();
     }
 
     private void handleNotificationOpened() {
+        if (!isAttachedToHost()) {
+            return;
+        }
+
         if (coldStartChabokNotificationAction != null &&
                 coldStartChabokNotification != null &&
                 (lastOpenedMessageId == null ||
                         !lastOpenedMessageId.contentEquals(coldStartChabokNotification.getId()))) {
             lastOpenedMessageId = coldStartChabokNotification.getId();
-            notificationOpenedEvent(coldStartChabokNotification, coldStartChabokNotificationAction);
+
+            final JSONObject response = getJsonNotificationObject(coldStartChabokNotification,
+                    coldStartChabokNotificationAction);
+            invokeMethodOnUiThread("onNotificationOpenedHandler", response.toString());
         }
     }
 
     private void handleNotificationShown() {
+        if (!isAttachedToHost()) {
+            return;
+        }
+
         if (coldStartChabokNotification != null &&
                 (lastShownMessageId == null ||
                         !lastShownMessageId.contentEquals(coldStartChabokNotification.getId()))) {
             lastShownMessageId = coldStartChabokNotification.getId();
-            notificationShownEvent(coldStartChabokNotification);
+
+            final JSONObject response = getJsonNotificationObject(coldStartChabokNotification, null);
+            invokeMethodOnUiThread("onShowNotificationHandler", response.toString());
         }
     }
 
-    private void notificationOpenedEvent(ChabokNotification message,
-                                         ChabokNotificationAction notificationAction) {
-        final JSONObject response = getJsonNotificationObject(message, notificationAction);
-        invokeMethodOnUiThread("onNotificationOpenedHandler", response.toString());
+    private void handleDeepLink() {
+        if (isAttachedToHost() && !TextUtils.isEmpty(deferredDeepLink)) {
+            invokeMethodOnUiThread("setOnDeepLinkHandler", deferredDeepLink);
+        }
     }
 
-    private void notificationShownEvent(ChabokNotification message) {
-        final JSONObject response = getJsonNotificationObject(message, null);
-        invokeMethodOnUiThread("onShowNotificationHandler", response.toString());
+    private void handleReferralId() {
+        if (isAttachedToHost() && !TextUtils.isEmpty(referrerId)) {
+            invokeMethodOnUiThread("setOnReferralHandler", referrerId);
+        }
+    }
+
+    private void handleConnectionStaus() {
+        if (isAttachedToHost() && !TextUtils.isEmpty(lastConnectionStatues)) {
+            invokeMethodOnUiThread("onConnectionHandler", lastConnectionStatues);
+        }
+    }
+
+    private void handleChabokMessage() {
+        if (isAttachedToHost() && !TextUtils.isEmpty(lastChabokMessage)) {
+            invokeMethodOnUiThread("onMessageHandler", lastChabokMessage);
+        }
     }
 
     private static JSONObject getJsonNotificationObject(ChabokNotification message,
