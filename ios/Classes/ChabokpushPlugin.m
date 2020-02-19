@@ -110,11 +110,11 @@ NSString *_lastMessage;
     } else if ([@"incrementUserAttribute" isEqualToString:method]) {
         NSString *attributeKey = arguments[@"attributeKey"];
         NSNumber *attributeValue = arguments[@"attributeValue"];
-        [self incrementUserAttribute:attributeKey withValue:[attributeValue longLongValue]];
+        [self incrementUserAttribute:attributeKey withValue:[attributeValue longValue]];
     } else if ([@"decrementUserAttribute" isEqualToString:method]) {
         NSString *attributeKey = arguments[@"attributeKey"];
         NSNumber *attributeValue = arguments[@"attributeValue"];
-        [self decrementUserAttribute:attributeKey withValue:[attributeValue longLongValue]];
+        [self decrementUserAttribute:attributeKey withValue:[attributeValue longValue]];
     } else if ([@"addToUserAttributeArray" isEqualToString:method]) {
         NSString *attributeKey = arguments[@"attributeKey"];
         NSArray<NSString *> *attributeValues = arguments[@"attributeValues"];
@@ -628,7 +628,7 @@ NSString *_lastMessage;
         // check datetime type
         if ([key hasPrefix:@"@CHKDATE_"]) {
             NSString *actualKey = [key substringFromIndex:9];
-            mutableData[actualKey] = [[Datetime alloc] initWithTimestamp:[data[key] longLongValue]];
+            mutableData[actualKey] = [[Datetime alloc] initWithTimestamp:[data[key] longValue]];
         } else {
             mutableData[key] = data[key];
         }
