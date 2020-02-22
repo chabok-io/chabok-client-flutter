@@ -56,6 +56,7 @@ NSString *_referralId;
     [self.channel setMethodCallHandler:nil];
     self.channel = nil;
     
+    [PushClientManager.defaultManager removeDelegate:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
