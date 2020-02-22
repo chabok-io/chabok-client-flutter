@@ -34,9 +34,12 @@ static NSString* RCTCurrentAppBackgroundState() {
 
 @dynamic coldStartNotificationResult;
 static NSDictionary *_coldStartNotificationResult;
+
 NSString *_lastNotificationId;
 NSString *_lastKnownState;
 NSString *_lastMessage;
+NSString *_deepLink;
+NSString *_referralId;
 
 +(void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel *channel =
@@ -123,6 +126,10 @@ NSString *_lastMessage;
         NSString *attributeKey = arguments[@"attributeKey"];
         NSArray<NSString *> *attributeValues = arguments[@"attributeValues"];
         [self removeFromUserAttributeArray:attributeKey withValues:attributeValues];
+    } else if ([@"setOnDeepLinkHandler" isEqualToString:method]) {
+        [self handleDeepLink];
+    } else if ([@"setOnReferralHandler" isEqualToString:method]) {
+        [self handleReferral];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -203,14 +210,31 @@ NSString *_lastMessage;
 -(BOOL)chabokDeeplinkResponse:(NSURL *)deeplink {
     NSLog(@"chabokDeeplinkResponse() invoked");
     
-    [self.channel invokeMethod:@"onDeepLinkResponseReceived" arguments:[deeplink absoluteString]];
+    if (deeplink) {
+        _deepLink = [deeplink absoluteString];
+    }
+    [self handleDeepLink];
+    
     return YES;
 }
 
 -(void)chabokReferralResponse:(NSString *)referralId {
     NSLog(@"chabokReferralResponse() invoked");
     
-    [self.channel invokeMethod:@"onReferralResponseReceived" arguments:referralId];
+    _referralId = referralId;
+    [self handleReferral];
+}
+
+-(void)handleDeepLink {
+    if (_deepLink) {
+        [self.channel invokeMethod:@"setOnDeepLinkHandler" arguments:_deepLink];
+    }
+}
+
+-(void)handleReferral {
+    if (_referralId) {
+        [self.channel invokeMethod:@"setOnReferralHandler" arguments:_referralId];
+    }
 }
 
 #pragma mark - register
