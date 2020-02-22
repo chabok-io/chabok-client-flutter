@@ -197,8 +197,17 @@ class ChabokPush {
     if (tagName == null || tagName.trim().length == 0) {
       throw new Exception("tagName is invalid. Please provide a valid name for tag");
     }
-    _channel.invokeMethod("addTag", <String, dynamic> {
-      'tagName': tagName
+    _channel.invokeMethod("addTags", <String, dynamic> {
+      'tags': [tagName]
+    });
+  }
+
+  addTags(List<String> tags) {
+    if (tags == null || tags.length == 0) {
+      throw new Exception("tags is invalid. Please provide a valid tag for addTags");
+    }
+    _channel.invokeMethod("addTags", <String, dynamic> {
+      'tags': tags
     });
   }
 
@@ -206,8 +215,17 @@ class ChabokPush {
     if (tagName == null || tagName.trim().length == 0) {
       throw new Exception("tagName is invalid. Please provide a valid name for tag");
     }
-    _channel.invokeMethod("removeTag", <String, dynamic> {
-      'tagName': tagName
+    _channel.invokeMethod("removeTags", <String, dynamic> {
+      'tags': [tagName]
+    });
+  }
+
+  removeTags(tags) {
+    if (tags == null || tags.length == 0) {
+      throw new Exception("tags is invalid. Please provide a valid tag for removeTags");
+    }
+    _channel.invokeMethod("removeTags", <String, dynamic> {
+      'tags': tags
     });
   }
 

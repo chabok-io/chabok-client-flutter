@@ -218,13 +218,13 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 logout();
                 break;
             case "addTag": {
-                String tagName = arguments.get("tagName").toString();
-                addTag(tagName, result);
+                List<String> tags = (List<String>) arguments.get("tags");
+                addTags(tags.toArray(new String[tags.size()]), result);
                 break;
             }
             case "removeTag": {
-                String tagName = arguments.get("tagName").toString();
-                removeTag(tagName, result);
+                List<String> tags = (List<String>) arguments.get("tags");
+                removeTags(tags.toArray(new String[tags.size()]), result);
                 break;
             }
             case "setUserAttributes":
@@ -470,8 +470,8 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
         });
     }
 
-    public void addTag(String tagName, final Result result) {
-        AdpPushClient.get().addTag(tagName, new Callback() {
+    public void addTags(String[] tags, final Result result) {
+        AdpPushClient.get().addTag(tags, new Callback() {
             @Override
             public void onSuccess(Object o) {
                 logDebug("The addTags onSuccess: invoked");
@@ -486,8 +486,8 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
         });
     }
 
-    public void removeTag(String tagName, final Result result) {
-        AdpPushClient.get().removeTag(tagName, new Callback() {
+    public void removeTags(String[] tags, final Result result) {
+        AdpPushClient.get().removeTag(tags, new Callback() {
             @Override
             public void onSuccess(Object o) {
                 logDebug("The removeTag onSuccess: invoked");

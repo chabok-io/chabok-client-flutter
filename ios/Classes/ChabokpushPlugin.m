@@ -90,12 +90,12 @@ FlutterResult _unsubscriptionResult;
         [self appWillOpenUrl];
     } else if ([@"logout" isEqualToString:method]) {
         [self logout];
-    } else if ([@"addTag" isEqualToString:method]) {
-        NSString *tagName = arguments[@"tagName"];
-        [self addTag:tagName withResult:result];
-    } else if ([@"removeTag" isEqualToString:method]) {
-        NSString *tagName = arguments[@"tagName"];
-        [self removeTag:tagName withResult:result];
+    } else if ([@"addTags" isEqualToString:method]) {
+        NSArray<NSString *> *tags = arguments[@"tags"];
+        [self addTags:tags withResult:result];
+    } else if ([@"removeTags" isEqualToString:method]) {
+        NSArray<NSString *> *tags = arguments[@"tags"];
+        [self removeTag:tags withResult:result];
     } else if ([@"setUserAttributes" isEqualToString:method]) {
         [self setUserAttributes:arguments];
     } else if ([@"unsetUserAttributes" isEqualToString:method]) {
@@ -332,7 +332,7 @@ FlutterResult _unsubscriptionResult;
 
 #pragma mark - tags
 
--(void) addTag:(NSString *)tagName withResult:(FlutterResult)result {
+-(void) addTag:(NSArray<NSString *> *)tags withResult:(FlutterResult)result {
     NSLog(@"addTag() invoked");
     
     if (![PushClientManager.defaultManager getInstallationId]) {
@@ -345,8 +345,8 @@ FlutterResult _unsubscriptionResult;
         return;
     }
     
-    [PushClientManager.defaultManager addTag:tagName
-                                     success:^(NSInteger count) {
+    [PushClientManager.defaultManager addTags:tags
+                                      success:^(NSInteger count) {
         NSDictionary *jsonDic = @{@"count":@(count)};
         NSString *json = [self dictionaryToJson:jsonDic];
         result(json);
@@ -361,7 +361,7 @@ FlutterResult _unsubscriptionResult;
     }];
 }
 
--(void) removeTag:(NSString *)tagName withResult:(FlutterResult)result {
+-(void) removeTag:(NSArray<NSString *> *)tags withResult:(FlutterResult)result {
     NSLog(@"removeTag() invoked");
     
     if (![PushClientManager.defaultManager getInstallationId]) {
@@ -374,8 +374,8 @@ FlutterResult _unsubscriptionResult;
         return;
     }
     
-    [PushClientManager.defaultManager removeTag:tagName
-                                        success:^(NSInteger count) {
+    [PushClientManager.defaultManager removeTags:tags
+                                         success:^(NSInteger count) {
         NSDictionary *jsonDic = @{@"count":@(count)};
         NSString *json = [self dictionaryToJson:jsonDic];
         result(json);
