@@ -593,11 +593,11 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 break;
             case NOT_INITIALIZED:
                 logDebug("NOT_INITIALIZED");
-                connectionStatus = "DISCONNECTED";
+                connectionStatus = "NOT_INITIALIZED";
                 break;
             case SOCKET_TIMEOUT:
                 logDebug("SOCKET_TIMEOUT");
-                connectionStatus = "DISCONNECTED";
+                connectionStatus = "SocketTimeout";
                 break;
             case DISCONNECTED:
                 logDebug("Disconnected");
@@ -716,14 +716,14 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 }
 
                 if (notificationAction.type == ChabokNotificationAction.ActionType.Opened) {
-                    response.put("actionType", "OPENED");
+                    response.put("actionType", "opened");
                 } else if (notificationAction.type == ChabokNotificationAction.ActionType.Dismissed) {
-                    response.put("actionType", "DISMISSED");
+                    response.put("actionType", "dismissed");
                 } else if (notificationAction.type == ChabokNotificationAction.ActionType.ActionTaken) {
-                    response.put("actionType", "ACTION_TAKEN");
+                    response.put("actionType", "action_taken");
                 }
             } else {
-                response.put("actionType", "SHOWN");
+                response.put("actionType", "shown");
             }
 
             JSONObject msgMap = new JSONObject();
@@ -773,14 +773,14 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     }
 
     private static JSONObject getJsonFromNotificationAction(ChabokNotificationAction notificationAction) {
-        String notifAction = "SHOWN";
+        String notifAction = "shown";
         if (notificationAction != null) {
             if (notificationAction.type == ChabokNotificationAction.ActionType.ActionTaken) {
-                notifAction = "ACTION_TAKEN";
+                notifAction = "action_taken";
             } else if (notificationAction.type == ChabokNotificationAction.ActionType.Dismissed) {
-                notifAction = "DISMISSED";
+                notifAction = "dismissed";
             } else if (notificationAction.type == ChabokNotificationAction.ActionType.Opened) {
-                notifAction = "OPENED";
+                notifAction = "opened";
             }
         }
 
