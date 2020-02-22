@@ -628,7 +628,7 @@ NSString *_lastMessage;
         // check datetime type
         if ([key hasPrefix:@"@CHKDATE_"]) {
             NSString *actualKey = [key substringFromIndex:9];
-            mutableData[actualKey] = [[Datetime alloc] initWithTimestamp:[data[key] longValue]];
+            mutableData[actualKey] = [[Datetime alloc] initWithTimestamp:[data[key] longLongValue]];
         } else {
             mutableData[key] = data[key];
         }
