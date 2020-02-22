@@ -217,12 +217,12 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
             case "logout":
                 logout();
                 break;
-            case "addTag": {
+            case "addTags": {
                 List<String> tags = (List<String>) arguments.get("tags");
                 addTags(tags.toArray(new String[tags.size()]), result);
                 break;
             }
-            case "removeTag": {
+            case "removeTags": {
                 List<String> tags = (List<String>) arguments.get("tags");
                 removeTags(tags.toArray(new String[tags.size()]), result);
                 break;
