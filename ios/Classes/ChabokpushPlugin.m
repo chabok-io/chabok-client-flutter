@@ -511,14 +511,14 @@ NSString *_referralId;
     
     if (@available(iOS 10.0, *)) {
         if ([actionId containsString:UNNotificationDismissActionIdentifier]) {
-            actionType = @"dismissed";
+            actionType = @"DISMISSED";
             actionIdStr = nil;
         } else if ([actionId containsString:UNNotificationDefaultActionIdentifier]) {
-            actionType = @"opened";
+            actionType = @"OPENED";
             actionIdStr = nil;
         }
     } else {
-        actionType = @"action_taken";
+        actionType = @"ACTION_TAKEN";
         actionIdStr = actionId;
         
         if (actionIdStr || !actions) {
@@ -589,16 +589,23 @@ NSString *_referralId;
 }
 
 -(void) sendLastChabokMessage {
-    if (self.channel) {
+    if (self.channel && _lastMessage) {
         [self.channel invokeMethod:@"onMessageHandler" arguments:_lastMessage];
     }
 }
 
 #pragma mark - delegate method
--(void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0)) API_AVAILABLE(ios(10.0)) {
+-(void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0)) {
+    NSLog(@"------------ %@ cid", @(__PRETTY_FUNCTION__));
+    
     [ChabokpushPlugin notificationOpened:response.notification.request.content.userInfo actionId:response.actionIdentifier];
 
     [self handleNotificationOpened];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler API_AVAILABLE(ios(10.0)) {
+    
+    NSLog(@"------------ %@ cid", @(__PRETTY_FUNCTION__));
 }
 
 -(void) pushClientManagerDidChangedServerConnectionState {
