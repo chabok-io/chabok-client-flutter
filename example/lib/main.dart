@@ -32,7 +32,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     });
 
     ChabokPush.shared.setOnMessageCallback((message) {
-      print('Got message ~> $message');
+      var msg = json.decode(message);
+      print('Got message = $msg');
 
       setState(() {
         logString += '\n' + message;
@@ -67,13 +68,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     ChabokPush.shared.setOnNotificationOpenedHandler((notif) {
       var notifObject = json.decode(notif);
-
-      print('User intract with notification = $notifObject["actionType"]' +
-            '\nnotification payload = $notifObject["message"]');
+      var actionType = notifObject["actionType"];
+      var message = notifObject["message"];
+      print('User intract with notification = $actionType\nnotification payload = $message');
     });
 
     ChabokPush.shared.setOnShowNotificationHandler((notif) {
-      print('Notification show to user $notif');
+      var notifObject = json.decode(notif);
+      var message = notifObject["message"];
+      print('Notification show to user = $message');
     });
 
     ChabokPush.shared.setOnDeepLinkHandler((deeplink) {
@@ -87,20 +90,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void deactivate() {
-    print('deactivate() invoked.');
+    // print('deactivate() invoked.');
     super.deactivate();
   }
 
   @override
   void dispose() {
-    print('dispose() invoked.');
+    // print('dispose() invoked.');
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('state = $state');
+    // print('state = $state');
   }
 
   //======================

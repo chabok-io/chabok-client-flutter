@@ -110,7 +110,7 @@ NSString *_referralId;
     } else if ([@"setOnNotificationOpenedHandler" isEqualToString:method]) {
         [self handleNotificationOpened];
     } else if ([@"setOnShowNotificationHandler" isEqualToString:method]) {
-        // TODO
+        [self handleNotificationShown];
     } else if ([@"incrementUserAttribute" isEqualToString:method]) {
         NSString *attributeKey = arguments[@"attributeKey"];
         NSNumber *attributeValue = arguments[@"attributeValue"];
@@ -175,13 +175,17 @@ NSString *_referralId;
     }
 }
 
+-(BOOL) isAttachedToHost {
+    return [_lastKnownState isEqualToString:@"active"] || [_lastKnownState isEqualToString:@"inactive"];
+}
+
 -(void)handleAppStateDidChange {
     NSString *newState = RCTCurrentAppBackgroundState();
     if (![newState isEqualToString:_lastKnownState]) {
         _lastKnownState = newState;
     }
     
-    if (![_lastKnownState isEqualToString:@"background"]) {
+    if ([self isAttachedToHost]) {
         NSDictionary *lastNotification = [PushClientManager.defaultManager lastNotificationAction];
         if (lastNotification) {
             NSString *actionId = lastNotification[@"actionId"];
@@ -227,13 +231,13 @@ NSString *_referralId;
 }
 
 -(void)handleDeepLink {
-    if (_deepLink) {
+    if ([self isAttachedToHost] && self.channel && _deepLink) {
         [self.channel invokeMethod:@"setOnDeepLinkHandler" arguments:_deepLink];
     }
 }
 
 -(void)handleReferral {
-    if (_referralId) {
+    if ([self isAttachedToHost] && self.channel && _referralId) {
         [self.channel invokeMethod:@"setOnReferralHandler" arguments:_referralId];
     }
 }
@@ -488,17 +492,32 @@ NSString *_referralId;
 }
 
 -(void) handleNotificationOpened {
+    if (![self isAttachedToHost]) {
+        return;
+    }
+    
     NSDictionary *payload = (NSDictionary *)[_coldStartNotificationResult valueForKey:@"message"];
     if (payload) {
         NSString *messageId = [PushClientManager.defaultManager getMessageIdFromPayload:payload];
         if (_coldStartNotificationResult && messageId && (!_lastNotificationId || ![_lastNotificationId isEqualToString:messageId])) {
             _lastNotificationId = messageId;
             if (self.channel) {
-                NSString *json = [self dictionaryToJson:payload];
+                NSString *json = [self dictionaryToJson:_coldStartNotificationResult];
                 [self.channel invokeMethod:@"onNotificationOpenedHandler" arguments:json];
             }
             _coldStartNotificationResult = nil;
         }
+    }
+}
+
+-(void) handleNotificationShown {
+    if (![self isAttachedToHost]) {
+        return;
+    }
+    
+    if (self.channel && _coldStartNotificationResult) {
+        NSString *json = [self dictionaryToJson:_coldStartNotificationResult];
+        [self.channel invokeMethod:@"onShowNotificationHandler" arguments:json];
     }
 }
 
@@ -511,19 +530,23 @@ NSString *_referralId;
     
     if (@available(iOS 10.0, *)) {
         if ([actionId containsString:UNNotificationDismissActionIdentifier]) {
-            actionType = @"DISMISSED";
+            actionType = @"dismissed";
             actionIdStr = nil;
         } else if ([actionId containsString:UNNotificationDefaultActionIdentifier]) {
-            actionType = @"OPENED";
+            actionType = @"opend";
             actionIdStr = nil;
+        } else if (actionId) {
+            actionType = @"action_taken";
+            actionIdStr = actionId;
+            if (actionIdStr || !actions) {
+                actionUrl = [ChabokpushPlugin getActionUrlFrom:actionIdStr actions:actions];
+            }
+        } else {
+            actionType = @"shown";
         }
     } else {
-        actionType = @"ACTION_TAKEN";
-        actionIdStr = actionId;
-        
-        if (actionIdStr || !actions) {
-            actionUrl = [ChabokpushPlugin getActionUrlFrom:actionIdStr actions:actions];
-        }
+        actionType = @"opened";
+        actionIdStr = nil;
     }
     
     NSMutableDictionary *notificationData = [NSMutableDictionary new];
@@ -566,6 +589,10 @@ NSString *_referralId;
 }
 
 -(void) sendConnectionStatus {
+    if (![self isAttachedToHost]) {
+        return;
+    }
+    
     NSString *connectionState = @"";
     if (PushClientManager.defaultManager.connectionState == PushClientServerConnectedState) {
         connectionState = @"CONNECTED";
@@ -576,9 +603,9 @@ NSString *_referralId;
                PushClientManager.defaultManager.connectionState == PushClientServerDisconnectedErrorState) {
         connectionState = @"DISCONNECTED";
     } else  if (PushClientManager.defaultManager.connectionState == PushClientServerSocketTimeoutState) {
-        connectionState = @"DISCONNECTED";
+        connectionState = @"SocketTimeout";
     } else {
-        connectionState = @"UNKNOWN";
+        connectionState = @"NOT_INITIALIZED";
     }
     
     NSLog(@"connectionState = %@", connectionState);
@@ -589,7 +616,7 @@ NSString *_referralId;
 }
 
 -(void) sendLastChabokMessage {
-    if (self.channel && _lastMessage) {
+    if ([self isAttachedToHost] && self.channel && _lastMessage) {
         [self.channel invokeMethod:@"onMessageHandler" arguments:_lastMessage];
     }
 }
@@ -599,13 +626,24 @@ NSString *_referralId;
     NSLog(@"------------ %@ cid", @(__PRETTY_FUNCTION__));
     
     [ChabokpushPlugin notificationOpened:response.notification.request.content.userInfo actionId:response.actionIdentifier];
-
+    
     [self handleNotificationOpened];
+    
+    if (completionHandler) {
+        completionHandler();
+    }
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler API_AVAILABLE(ios(10.0)) {
-    
     NSLog(@"------------ %@ cid", @(__PRETTY_FUNCTION__));
+    
+    [ChabokpushPlugin notificationOpened:notification.request.content.userInfo actionId:nil];
+    
+    [self handleNotificationShown];
+    
+    if (completionHandler) {
+        completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionAlert);
+    }
 }
 
 -(void) pushClientManagerDidChangedServerConnectionState {
@@ -619,7 +657,7 @@ NSString *_referralId;
     
     NSMutableDictionary *messageDict = [NSMutableDictionary.alloc initWithDictionary:[message toDict]];
     [messageDict setObject:message.channel forKey:@"channel"];
-   
+    
     _lastMessage = [self dictionaryToJson:messageDict];
     
     [self sendLastChabokMessage];
@@ -629,14 +667,14 @@ NSString *_referralId;
 - (void)pushClientManagerDidRegisterUser:(BOOL)registration {
     NSLog(@"------------ %@ cid = %@", @(__PRETTY_FUNCTION__), @(registration));
     
-//    NSDictionary *successDic = @{@"regisered":@(registration)};
+    //    NSDictionary *successDic = @{@"regisered":@(registration)};
 }
 
 // called when PushClientManager Register User failed
 - (void)pushClientManagerDidFailRegisterUser:(NSError *)error {
     NSLog(@"------------ %@ cid = %@", @(__PRETTY_FUNCTION__), error);
-
-//    NSDictionary *errorDic = @{@"error":error.localizedDescription};
+    
+    //    NSDictionary *errorDic = @{@"error":error.localizedDescription};
 }
 
 #pragma mark - json
