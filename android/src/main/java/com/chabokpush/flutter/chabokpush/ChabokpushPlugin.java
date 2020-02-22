@@ -428,17 +428,17 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
             AdpPushClient.get().publish(msg, new Callback() {
                 @Override
                 public void onSuccess(Object o) {
-                    replySuccess(result, "Message published");
+                    replySuccess(result, true);
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
-                    replyError(result, "-1", throwable.getMessage(), throwable);
+                    replyError(result, "-1", throwable.getMessage(), null);
                 }
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            replyError(result, "-2", e.getMessage(), e);
+            replyError(result, "-2", e.getMessage(), null);
         }
     }
 
@@ -451,7 +451,7 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
 
             @Override
             public void onFailure(Throwable throwable) {
-                replyError(result, "-1", throwable.getMessage(), throwable);
+                replyError(result, "-1", throwable.getMessage(), null);
             }
         });
     }
@@ -465,39 +465,47 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
 
             @Override
             public void onFailure(Throwable throwable) {
-                replyError(result, "-1", throwable.getMessage(), throwable);
+                replyError(result, "-1", throwable.getMessage(), null);
             }
         });
     }
 
-    public void addTags(String[] tags, final Result result) {
+    public void addTags(final String[] tags, final Result result) {
         AdpPushClient.get().addTag(tags, new Callback() {
             @Override
             public void onSuccess(Object o) {
                 logDebug("The addTags onSuccess: invoked");
-                replySuccess(result, "Tag Added");
+                try {
+                    replySuccess(result, new JSONObject().put("count", 1).toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 logDebug("The addTag onFailure: invoked");
-                replyError(result, "-1", throwable.getMessage(), throwable);
+                replyError(result, "-1", throwable.getMessage(), null);
             }
         });
     }
 
-    public void removeTags(String[] tags, final Result result) {
+    public void removeTags(final String[] tags, final Result result) {
         AdpPushClient.get().removeTag(tags, new Callback() {
             @Override
             public void onSuccess(Object o) {
                 logDebug("The removeTag onSuccess: invoked");
-                replySuccess(result, "Tag removed");
+                try {
+                    replySuccess(result, new JSONObject().put("count", 1).toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 logDebug("The removeTag onFailure: invoked");
-                replyError(result, "-1", throwable.getMessage(), throwable);
+                replyError(result, "-1", throwable.getMessage(), null);
             }
         });
     }

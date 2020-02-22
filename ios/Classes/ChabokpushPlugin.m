@@ -332,8 +332,8 @@ FlutterResult _unsubscriptionResult;
 
 #pragma mark - tags
 
--(void) addTag:(NSArray<NSString *> *)tags withResult:(FlutterResult)result {
-    NSLog(@"addTag() invoked");
+-(void) addTags:(NSArray<NSString *> *)tags withResult:(FlutterResult)result {
+    NSLog(@"addTags() invoked");
     
     if (![PushClientManager.defaultManager getInstallationId]) {
         NSString *msg = @"UserId not registered yet.";
@@ -361,8 +361,8 @@ FlutterResult _unsubscriptionResult;
     }];
 }
 
--(void) removeTag:(NSArray<NSString *> *)tags withResult:(FlutterResult)result {
-    NSLog(@"removeTag() invoked");
+-(void) removeTags:(NSArray<NSString *> *)tags withResult:(FlutterResult)result {
+    NSLog(@"removeTags() invoked");
     
     if (![PushClientManager.defaultManager getInstallationId]) {
         NSString *msg = @"UserId not registered yet.";
@@ -719,7 +719,7 @@ FlutterResult _unsubscriptionResult;
     if (_subscriptionResult) {
         _subscriptionResult([FlutterError errorWithCode:@"-1"
                                                 message:@"subscription failed"
-                                                details:error]);
+                                                details:[error userInfo]]);
         _subscriptionResult = nil;
     }
 }
@@ -739,7 +739,7 @@ FlutterResult _unsubscriptionResult;
     if (_unsubscriptionResult) {
         _unsubscriptionResult([FlutterError errorWithCode:@"-1"
                                                   message:@"unsubscription failed"
-                                                  details:error]);
+                                                  details:[error userInfo]]);
         _unsubscriptionResult = nil;
     }
 }

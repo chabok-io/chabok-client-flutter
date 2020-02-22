@@ -110,7 +110,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   //======================
 
   _login() {
-    ChabokPush.shared.login(userIdController.text.toString());
+    ChabokPush.shared.login(userIdController.text.toString())
+    .then((response) {
+      setState(() {
+        var registered = json.decode(response)['registered'].toString();
+        logString += '\nregistered response is: $registered';
+      });
+    }).catchError((error) {
+        var userId = userIdController.text.toString();
+        setState(() {
+          logString += '\nfailed to login for: $userId with error: $error';
+        });
+    });
   }
 
   _logout() {
@@ -118,11 +129,33 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   _addTag() {
-    ChabokPush.shared.addTag(tagController.text.toString());
+    ChabokPush.shared.addTag(tagController.text.toString())
+    .then((response) {
+      setState(() {
+        var count = json.decode(response)['count'].toString();
+        logString += '\nsuccessfully add tag with count: $count';
+      });
+    }).catchError((error) {
+        var tag = tagController.text.toString();
+        setState(() {
+          logString += '\nfailed to add tag: $tag with error: $error';
+        });
+    });
   }
 
   _removeTag() {
-    ChabokPush.shared.removeTag(tagController.text.toString());
+    ChabokPush.shared.removeTag(tagController.text.toString())
+    .then((response) {
+      setState(() {
+        var count = json.decode(response)['count'].toString();
+        logString += '\nsuccessfully remove tag with count: $count';
+      });
+    }).catchError((error) {
+        var tag = tagController.text.toString();
+        setState(() {
+          logString += '\nfailed to remove tag: $tag with error: $error';
+        });
+    });
   }
 
   _setUserAttributes() {
