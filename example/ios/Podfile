@@ -75,6 +75,10 @@ target 'Runner' do
   end
 end
 
+target 'NotificationService' do
+    pod 'ChabokPush', '~> 2.2.0'
+end
+
 # Prevent Cocoapods from embedding a second Flutter framework and causing an error with the new Xcode build system.
 install! 'cocoapods', :disable_input_output_paths => true
 
