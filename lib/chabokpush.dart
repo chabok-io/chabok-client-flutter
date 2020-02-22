@@ -38,7 +38,7 @@ class ChabokPush {
 
   //=============== User Lifecycle
 
-  Future<String> login(String userId) async {
+  Future<dynamic> login(String userId) async {
     return _channel.invokeMethod("login", <String, dynamic> {
       'userId': userId
     });
@@ -48,11 +48,11 @@ class ChabokPush {
     _channel.invokeMethod("logout");
   }
 
-  Future<String> getUserId() {
+  Future<String> getUserId() async {
     return _channel.invokeMethod("getUserId");
   }
 
-  Future<String> getInstallationId() {
+  Future<String> getInstallationId() async {
     return _channel.invokeMethod("getInstallationId");
   }
 
@@ -193,38 +193,38 @@ class ChabokPush {
 
   //=============== Tags
 
-  addTag(tagName) {
+  Future<dynamic> addTag(tagName) async {
     if (tagName == null || tagName.trim().length == 0) {
       throw new Exception("tagName is invalid. Please provide a valid name for tag");
     }
-    _channel.invokeMethod("addTags", <String, dynamic> {
+    return _channel.invokeMethod("addTags", <String, dynamic> {
       'tags': [tagName]
     });
   }
 
-  addTags(List<String> tags) {
+  Future<dynamic> addTags(List<String> tags) async {
     if (tags == null || tags.length == 0) {
       throw new Exception("tags is invalid. Please provide a valid tag for addTags");
     }
-    _channel.invokeMethod("addTags", <String, dynamic> {
+    return _channel.invokeMethod("addTags", <String, dynamic> {
       'tags': tags
     });
   }
 
-  removeTag(tagName) {
+  Future<dynamic> removeTag(tagName) async {
     if (tagName == null || tagName.trim().length == 0) {
       throw new Exception("tagName is invalid. Please provide a valid name for tag");
     }
-    _channel.invokeMethod("removeTags", <String, dynamic> {
+    return _channel.invokeMethod("removeTags", <String, dynamic> {
       'tags': [tagName]
     });
   }
 
-  removeTags(tags) {
+  Future<dynamic> removeTags(tags) async {
     if (tags == null || tags.length == 0) {
       throw new Exception("tags is invalid. Please provide a valid tag for removeTags");
     }
-    _channel.invokeMethod("removeTags", <String, dynamic> {
+    return _channel.invokeMethod("removeTags", <String, dynamic> {
       'tags': tags
     });
   }
