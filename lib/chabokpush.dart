@@ -211,6 +211,32 @@ class ChabokPush {
     });
   }
 
+  //=============== subscription
+
+  Future<String> subscribe(String channelName) async {
+    if (channelName == null || channelName.trim().length == 0) {
+      throw new Exception("channelName is invalid. Please provide a valid name for subscribe");
+    }
+
+    var params = <String, dynamic> {
+      'channelName': channelName
+    };
+
+    return _channel.invokeMethod("subscribe", params);
+  }
+  
+  Future<String> unsubscribe(String channelName) async {
+    if (channelName == null || channelName.trim().length == 0) {
+      throw new Exception("channelName is invalid. Please provide a valid name for unsubscribe");
+    }
+
+    var params = <String, dynamic> {
+      'channelName': channelName
+    };
+
+    return _channel.invokeMethod("unsubscribe", params);
+  }
+
   //=============== Handlers
 
   void setOnMessageCallback(callback) {

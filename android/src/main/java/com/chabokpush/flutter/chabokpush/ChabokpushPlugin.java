@@ -271,33 +271,47 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
                 Double attributesValue1 = (Double) arguments.get("attributeValue");
                 incrementUserAttribute(attributeKey1, attributesValue1);
                 break;
-            case "decrementUserAttribute":
-                String attributeKey2 = arguments.get("attributeKey").toString();
-                Double attributesValue2 = (Double) arguments.get("attributeValue");
-                decrementUserAttribute(attributeKey2, attributesValue2);
+            case "decrementUserAttribute": {
+                String attributeKey = arguments.get("attributeKey").toString();
+                Double attributesValue = (Double) arguments.get("attributeValue");
+                decrementUserAttribute(attributeKey, attributesValue);
                 break;
-            case "addToUserAttributeArray":
-                String attributeKey3 = arguments.get("attributeKey").toString();
-                List<String> attributesValues3 = (List<String>) arguments.get("attributeValues");
-                addToUserAttributeArray(attributeKey3,
-                        attributesValues3.toArray(new String[attributesValues3.size()]));
+            }
+            case "addToUserAttributeArray": {
+                String attributeKey = arguments.get("attributeKey").toString();
+                List<String> attributesValues = (List<String>) arguments.get("attributeValues");
+                addToUserAttributeArray(attributeKey,
+                        attributesValues.toArray(new String[attributesValues.size()]));
                 break;
-            case "removeFromUserAttributeArray":
-                String attributeKey4 = arguments.get("attributeKey").toString();
-                List<String> attributesValues4 = (List<String>) arguments.get("attributeValues");
-                removeFromUserAttributeArray(attributeKey4,
-                        attributesValues4.toArray(new String[attributesValues4.size()]));
+            }
+            case "removeFromUserAttributeArray": {
+                String attributeKey = arguments.get("attributeKey").toString();
+                List<String> attributesValues = (List<String>) arguments.get("attributeValues");
+                removeFromUserAttributeArray(attributeKey,
+                        attributesValues.toArray(new String[attributesValues.size()]));
                 break;
-            case "unsetUserAttributes":
-                List<String> attributesValues5 = (List<String>) arguments.get("attributeValues");
-                unsetUserAttributes(attributesValues5.toArray(new String[attributesValues5.size()]));
+            }
+            case "unsetUserAttributes": {
+                List<String> attributesValues = (List<String>) arguments.get("attributeValues");
+                unsetUserAttributes(attributesValues.toArray(new String[attributesValues.size()]));
                 break;
+            }
             case "setOnDeepLinkHandler":
                 handleDeepLink();
                 break;
             case "setOnReferralHandler":
                 handleReferralId();
                 break;
+            case "subscribe": {
+                String channelName = arguments.get("channelName").toString();
+                subscribe(channelName, result);
+                break;
+            }
+            case "unsubscribe": {
+                String channelName = arguments.get("channelName").toString();
+                unsubscribe(channelName, result);
+                break;
+            }
             default:
                 replyNotImplemented(result);
                 break;
@@ -307,51 +321,6 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
     public void login(String userId, Result result) {
         onRegisterResult = result;
         AdpPushClient.get().login(userId);
-    }
-
-    public void publish(JSONObject message, final Result result) {
-        try {
-            JSONObject dataMap = null;
-            if (message.has("data")) {
-                dataMap = message.getJSONObject("data");
-            }
-            String body = message.getString("content");
-            String userId = message.getString("userId");
-            String channel = message.getString("channel");
-
-            PushMessage msg = new PushMessage();
-
-            if (body != null) {
-                msg.setBody(body);
-            }
-            if (userId != null) {
-                msg.setUser(userId);
-            }
-            if (userId != null) {
-                msg.setUser(userId);
-            }
-            if (channel != null) {
-                msg.setChannel(channel);
-            }
-            if (dataMap != null) {
-                msg.setData(dataMap);
-            }
-
-            AdpPushClient.get().publish(msg, new Callback() {
-                @Override
-                public void onSuccess(Object o) {
-                    replySuccess(result, "Message published");
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    replyError(result, "-1", throwable.getMessage(), throwable);
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-            replyError(result, "-2", e.getMessage(), e);
-        }
     }
 
     public void logout() {
@@ -426,6 +395,79 @@ public class ChabokpushPlugin extends FlutterRegistrarResponder
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void publish(JSONObject message, final Result result) {
+        try {
+            JSONObject dataMap = null;
+            if (message.has("data")) {
+                dataMap = message.getJSONObject("data");
+            }
+            String body = message.getString("content");
+            String userId = message.getString("userId");
+            String channel = message.getString("channel");
+
+            PushMessage msg = new PushMessage();
+
+            if (body != null) {
+                msg.setBody(body);
+            }
+            if (userId != null) {
+                msg.setUser(userId);
+            }
+            if (userId != null) {
+                msg.setUser(userId);
+            }
+            if (channel != null) {
+                msg.setChannel(channel);
+            }
+            if (dataMap != null) {
+                msg.setData(dataMap);
+            }
+
+            AdpPushClient.get().publish(msg, new Callback() {
+                @Override
+                public void onSuccess(Object o) {
+                    replySuccess(result, "Message published");
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    replyError(result, "-1", throwable.getMessage(), throwable);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            replyError(result, "-2", e.getMessage(), e);
+        }
+    }
+
+    public void subscribe(final String channel, final Result result) {
+        AdpPushClient.get().subscribe(channel, new Callback() {
+            @Override
+            public void onSuccess(Object o) {
+                replySuccess(result, channel);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                replyError(result, "-1", throwable.getMessage(), throwable);
+            }
+        });
+    }
+
+    public void unsubscribe(final String channel, final Result result) {
+        AdpPushClient.get().unsubscribe(channel, new Callback() {
+            @Override
+            public void onSuccess(Object o) {
+                replySuccess(result, channel);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                replyError(result, "-1", throwable.getMessage(), throwable);
+            }
+        });
     }
 
     public void addTag(String tagName, final Result result) {

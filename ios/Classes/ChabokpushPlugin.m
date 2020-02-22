@@ -41,6 +41,9 @@ NSString *_lastMessage;
 NSString *_deepLink;
 NSString *_referralId;
 
+FlutterResult _subscriptionResult;
+FlutterResult _unsubscriptionResult;
+
 +(void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel *channel =
     [FlutterMethodChannel methodChannelWithName:METHOD_CHANNEL_NAME
@@ -55,6 +58,9 @@ NSString *_referralId;
 -(void)dealloc {
     [self.channel setMethodCallHandler:nil];
     self.channel = nil;
+    
+    _subscriptionResult = nil;
+    _unsubscriptionResult = nil;
     
     [PushClientManager.defaultManager removeDelegate:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -131,6 +137,12 @@ NSString *_referralId;
         [self handleDeepLink];
     } else if ([@"setOnReferralHandler" isEqualToString:method]) {
         [self handleReferral];
+    } else if ([@"subscribe" isEqualToString:method]) {
+        NSString *channelName = arguments[@"channelName"];
+        [self subscribe:channelName withResult:result];
+    } else if ([@"unsubscribe" isEqualToString:method]) {
+        NSString *channelName = arguments[@"channelName"];
+        [self unsubscribe:channelName withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -486,6 +498,21 @@ NSString *_referralId;
     result(json);
 }
 
+#pragma mark - subscribe
+-(void) subscribe:(NSString *)channel withResult:(FlutterResult)result {
+    NSLog(@"subscribe() invoked");
+    
+    _subscriptionResult = result;
+    [PushClientManager.defaultManager subscribe:channel];
+}
+
+-(void) unsubscribe:(NSString *)channel withResult:(FlutterResult)result {
+    NSLog(@"unsubscribe() invoked");
+    
+    _unsubscriptionResult = result;
+    [PushClientManager.defaultManager unsubscribe:channel];
+}
+
 #pragma mark - deeplink
 -(void) appWillOpenUrl {
     // no implementation
@@ -675,6 +702,46 @@ NSString *_referralId;
     NSLog(@"------------ %@ cid = %@", @(__PRETTY_FUNCTION__), error);
     
     //    NSDictionary *errorDic = @{@"error":error.localizedDescription};
+}
+
+- (void)pushClientManagerDidSubscribed:(NSString *)channel {
+    NSLog(@"------------ %@ cid = %@", @(__PRETTY_FUNCTION__), channel);
+    
+    if (_subscriptionResult) {
+        _subscriptionResult(channel);
+        _subscriptionResult = nil;
+    }
+}
+
+- (void)pushClientManagerDidFailInSubscribe:(NSError *)error {
+    NSLog(@"------------ %@ cid = %@", @(__PRETTY_FUNCTION__), error);
+    
+    if (_subscriptionResult) {
+        _subscriptionResult([FlutterError errorWithCode:@"-1"
+                                                message:@"subscription failed"
+                                                details:error]);
+        _subscriptionResult = nil;
+    }
+}
+
+- (void)pushClientManagerDidUnsubscribed:(NSString *)channel {
+    NSLog(@"------------ %@ cid = %@", @(__PRETTY_FUNCTION__), channel);
+    
+    if (_unsubscriptionResult) {
+        _unsubscriptionResult(channel);
+        _unsubscriptionResult = nil;
+    }
+}
+
+- (void)pushClientManagerDidFailInUnsubscribe:(NSError *)error {
+    NSLog(@"------------ %@ cid = %@", @(__PRETTY_FUNCTION__), error);
+    
+    if (_unsubscriptionResult) {
+        _unsubscriptionResult([FlutterError errorWithCode:@"-1"
+                                                  message:@"unsubscription failed"
+                                                  details:error]);
+        _unsubscriptionResult = nil;
+    }
 }
 
 #pragma mark - json

@@ -16,6 +16,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final TextEditingController userIdController = TextEditingController();
   final TextEditingController tagController = TextEditingController();
+  final TextEditingController channelController = TextEditingController();
 
   Color connectionColor = Colors.red;
   String connectionString = "UNKNOWN";
@@ -194,6 +195,34 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       'commentDate': new DateTime.now(),
       'isOwner': false,
       'commentCount': 85
+    });
+  }
+
+  _subscribe() {
+    ChabokPush.shared.subscribe(channelController.text.toString())
+    .then((channel) {
+      setState(() {
+        logString += '\nsuccessfully subscribed to channel: $channel';
+      });
+    }).catchError((error) {
+        var channel = channelController.text.toString();
+        setState(() {
+          logString += '\nfailed to subscribe to channel: $channel with error: $error';
+        });
+    });
+  }
+
+  _unsubscribe() {
+    ChabokPush.shared.unsubscribe(channelController.text.toString())
+    .then((channel) {
+      setState(() {
+        logString += '\nsuccessfully unsubscribed from channel: $channel';
+      });
+    }).catchError((error) {
+        var channel = channelController.text.toString();
+        setState(() {
+          logString += '\nfailed to unsubscribe from channel: $channel with error: $error';
+        });
     });
   }
 
@@ -577,6 +606,51 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ),
     );
 
+    Widget subscriptionSection = Container(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: TextField(
+              controller: channelController,
+              decoration: InputDecoration(
+                labelText: 'Channel Name'
+              )
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: MaterialButton(
+              color: color,
+              onPressed: _subscribe,
+              child: Text("Subscribe",
+                textAlign: TextAlign.center,
+                style: style.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold
+                )
+              )
+            )
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: MaterialButton(
+              color: color,
+              onPressed: _unsubscribe,
+              child: Text("Unsubscribe",
+                textAlign: TextAlign.center,
+                style: style.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold
+                )
+              )
+            ),
+          ),
+        ],
+      ),
+    );
+
     Widget logSection = Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -618,6 +692,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             loginSection,
             Divider(),
             tagSection,
+            Divider(),
+            subscriptionSection,
             Divider(),
             attributeSection,
             Divider(),
