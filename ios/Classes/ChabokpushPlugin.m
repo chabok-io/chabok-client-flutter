@@ -232,7 +232,7 @@ FlutterResult _unsubscriptionResult;
     }
     [self handleDeepLink];
     
-    return YES;
+    return NO;
 }
 
 -(void)chabokReferralResponse:(NSString *)referralId {
