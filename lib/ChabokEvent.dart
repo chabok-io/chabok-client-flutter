@@ -3,16 +3,16 @@ class ChabokEvent {
   double revenue;
   String currency;
 
-  ChabokEvent(double revenue, [String currency]){
+  ChabokEvent(double revenue, [String currency]) {
     this.revenue = revenue;
     this.currency = currency;
   }
 
-  setData(dynamic data){
+  setData(dynamic data) {
     this.data = data;
   }
 
-  setCurrency(String currency){
+  setCurrency(String currency) {
     this.currency = currency;
   }
 }

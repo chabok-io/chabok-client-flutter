@@ -5,7 +5,7 @@ class ChabokMessage {
   String channel;
   dynamic notification;
 
-  ChabokMessage(String userId, String channel, String content, [dynamic data]){
+  ChabokMessage(String userId, String channel, String content, [dynamic data]) {
     this.data = data;
     this.userId = userId;
     this.content = content;

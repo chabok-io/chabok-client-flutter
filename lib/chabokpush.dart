@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:chabokpush/chabokEvent.dart';
-import 'package:chabokpush/chabokMessage.dart';
+import 'package:chabokpush/ChabokEvent.dart';
+import 'package:chabokpush/ChabokMessage.dart';
 
 // Handlers for various events
 typedef void MessageHandler(dynamic);
