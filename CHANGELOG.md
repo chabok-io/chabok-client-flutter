@@ -1,3 +1,6 @@
+## 1.0.1
+- Fix flutter warning issues.
+
 ## 1.0.0
 - Update Chabok android SDK ([v3.1.3](https://github.com/chabok-io/chabok-client-android/releases/tag/v3.1.3))
 - Add Chabok iOS SDK ([v2.2.0](https://github.com/chabok-io/chabok-client-ios/releases/tag/v2.2.0))
