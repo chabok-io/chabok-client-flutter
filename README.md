@@ -1,4 +1,9 @@
+<p align="center"> 
+  <img src="https://github.com/chabok-io/chabok-client-flutter/blob/master/flutter.svg">
+</p>
+
 # Chabok Push Client for Flutter
+[![pub package](https://img.shields.io/pub/v/chabokpush.svg)](https://pub.dev/packages/chabokpush)
 
 Flutter wrapper for chabok library.
 This client library supports Flutter to use chabok push library.
