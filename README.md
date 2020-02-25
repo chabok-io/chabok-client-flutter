@@ -18,6 +18,11 @@ You can find release note [here](https://doc.chabok.io/flutter/release-note.html
 ## Support
 Please visit [Issues](https://github.com/chabok-io/chabok-client-flutter/issues).
 
+## Screenshot
+<img src="https://raw.githubusercontent.com/chabok-io/chabok-client-flutter/master/flutter_sample_screen_shot.png"
+       width="20%">
+
+
 ## Getting Started - Android
 1. Add Google and Chabok plugins to `build.gradle` project level file.
 
