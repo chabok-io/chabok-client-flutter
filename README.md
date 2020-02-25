@@ -103,8 +103,8 @@ For initializing the Chabok SDK in dart add bellow lines in `import` section:
 
 ```dart
 import 'package:chabokpush/chabokpush.dart';
-import 'package:chabokpush/chabokEvent.dart';
-import 'package:chabokpush/chabokMessage.dart';
+import 'package:chabokpush/ChabokEvent.dart';
+import 'package:chabokpush/ChabokMessage.dart';
 ```
 
 ### Login user
