@@ -14,7 +14,8 @@ typedef void ReferralHandler(String referralId);
 
 class ChabokPush {
   static final ChabokPush _instance = ChabokPush._();
-  static const MethodChannel _channel = const MethodChannel('com.chabokpush.flutter/chabokpush');
+  static const MethodChannel _channel =
+      const MethodChannel('com.chabokpush.flutter/chabokpush');
 
   // event handlers
   MessageHandler _onMessageHandler;
@@ -39,9 +40,7 @@ class ChabokPush {
   //=============== User Lifecycle
 
   Future<dynamic> login(String userId) async {
-    return _channel.invokeMethod("login", <String, dynamic> {
-      'userId': userId
-    });
+    return _channel.invokeMethod("login", <String, dynamic>{'userId': userId});
   }
 
   logout() {
@@ -59,20 +58,20 @@ class ChabokPush {
   //=============== Publish Messages
 
   publish(ChabokMessage message) {
-    var msgMap = <String, dynamic> {
+    var msgMap = <String, dynamic>{
       'userId': message.userId,
       'content': message.content
     };
 
-    if(message.channel != null) {
+    if (message.channel != null) {
       msgMap['channel'] = message.channel;
     }
 
-    if(message.data != null) {
+    if (message.data != null) {
       msgMap['data'] = message.data;
     }
 
-    if(message.notification != null) {
+    if (message.notification != null) {
       msgMap['notification'] = message.notification;
     }
 
@@ -85,7 +84,8 @@ class ChabokPush {
     var _attrs = {};
     for (var key in attributes.keys) {
       if (attributes[key].runtimeType == DateTime) {
-        _attrs['@CHKDATE_' + key] = attributes[key].millisecondsSinceEpoch.toString();
+        _attrs['@CHKDATE_' + key] =
+            attributes[key].millisecondsSinceEpoch.toString();
       } else {
         _attrs[key] = attributes[key];
       }
@@ -95,40 +95,40 @@ class ChabokPush {
   }
 
   unsetUserAttributes(List<String> attributes) {
-    _channel.invokeMethod("unsetUserAttributes", <String, dynamic> {
-      'attributeValues': attributes
-    });
+    _channel.invokeMethod("unsetUserAttributes",
+        <String, dynamic>{'attributeValues': attributes});
   }
 
   unsetUserAttribute(String attribute) {
-    _channel.invokeMethod("unsetUserAttributes", <String, dynamic> {
+    _channel.invokeMethod("unsetUserAttributes", <String, dynamic>{
       'attributeValues': [attribute]
     });
   }
 
   addToUserAttributeArray(String attributeKey, List<String> attributeValues) {
-    _channel.invokeMethod("addToUserAttributeArray", <String, dynamic> {
+    _channel.invokeMethod("addToUserAttributeArray", <String, dynamic>{
       'attributeKey': attributeKey,
       'attributeValues': attributeValues
     });
   }
 
-  removeFromUserAttributeArray(String attributeKey, List<String> attributeValues) {
-    _channel.invokeMethod("removeFromUserAttributeArray", <String, dynamic> {
+  removeFromUserAttributeArray(
+      String attributeKey, List<String> attributeValues) {
+    _channel.invokeMethod("removeFromUserAttributeArray", <String, dynamic>{
       'attributeKey': attributeKey,
       'attributeValues': attributeValues
     });
   }
 
-  incrementUserAttribute(String attributeKey, [double attributeValue=1]) {
-    _channel.invokeMethod("incrementUserAttribute", <String, dynamic> {
+  incrementUserAttribute(String attributeKey, [double attributeValue = 1]) {
+    _channel.invokeMethod("incrementUserAttribute", <String, dynamic>{
       'attributeKey': attributeKey,
       'attributeValue': attributeValue
     });
   }
 
-  decrementUserAttribute(String attributeKey, [double attributeValue=1]) {
-    _channel.invokeMethod("decrementUserAttribute", <String, dynamic> {
+  decrementUserAttribute(String attributeKey, [double attributeValue = 1]) {
+    _channel.invokeMethod("decrementUserAttribute", <String, dynamic>{
       'attributeKey': attributeKey,
       'attributeValue': attributeValue
     });
@@ -138,34 +138,32 @@ class ChabokPush {
 
   track(String trackName, [dynamic arguments]) {
     if (trackName == null || trackName.trim().length == 0) {
-      throw new Exception("trackName is invalid. Please provide a valid name for track");
+      throw new Exception(
+          "trackName is invalid. Please provide a valid name for track");
     }
 
     var _data = {};
     for (var key in arguments.keys) {
       if (arguments[key].runtimeType == DateTime) {
-        _data['@CHKDATE_' + key] = arguments[key].millisecondsSinceEpoch.toString();
+        _data['@CHKDATE_' + key] =
+            arguments[key].millisecondsSinceEpoch.toString();
       } else {
         _data[key] = arguments[key];
       }
     }
 
-    var params = <String, dynamic> {
-      'data': _data,
-      'trackName': trackName
-    };
+    var params = <String, dynamic>{'data': _data, 'trackName': trackName};
 
     _channel.invokeMethod("track", params);
   }
 
   trackPurchase(String trackName, ChabokEvent chabokEvent) {
     if (trackName == null || trackName.trim().length == 0) {
-      throw new Exception("trackName is invalid. Please provide a valid name for track");
+      throw new Exception(
+          "trackName is invalid. Please provide a valid name for track");
     }
 
-    var data = <String, dynamic> {
-      'revenue': chabokEvent.revenue
-    };
+    var data = <String, dynamic>{'revenue': chabokEvent.revenue};
 
     if (chabokEvent.currency != null) {
       data['currency'] = chabokEvent.currency;
@@ -175,7 +173,8 @@ class ChabokPush {
     if (chabokEvent.data != null) {
       for (var key in chabokEvent.data.keys) {
         if (chabokEvent.data[key].runtimeType == DateTime) {
-          _data['@CHKDATE_' + key] = chabokEvent.data[key].millisecondsSinceEpoch.toString();
+          _data['@CHKDATE_' + key] =
+              chabokEvent.data[key].millisecondsSinceEpoch.toString();
         } else {
           _data[key] = chabokEvent.data[key];
         }
@@ -183,10 +182,7 @@ class ChabokPush {
       data['data'] = _data;
     }
 
-    var params = <String, dynamic> {
-      'data': data,
-      'trackName': trackName
-    };
+    var params = <String, dynamic>{'data': data, 'trackName': trackName};
 
     _channel.invokeMethod("trackPurchase", params);
   }
@@ -195,62 +191,60 @@ class ChabokPush {
 
   Future<dynamic> addTag(tagName) async {
     if (tagName == null || tagName.trim().length == 0) {
-      throw new Exception("tagName is invalid. Please provide a valid name for tag");
+      throw new Exception(
+          "tagName is invalid. Please provide a valid name for tag");
     }
-    return _channel.invokeMethod("addTags", <String, dynamic> {
+    return _channel.invokeMethod("addTags", <String, dynamic>{
       'tags': [tagName]
     });
   }
 
   Future<dynamic> addTags(List<String> tags) async {
     if (tags == null || tags.length == 0) {
-      throw new Exception("tags is invalid. Please provide a valid tag for addTags");
+      throw new Exception(
+          "tags is invalid. Please provide a valid tag for addTags");
     }
-    return _channel.invokeMethod("addTags", <String, dynamic> {
-      'tags': tags
-    });
+    return _channel.invokeMethod("addTags", <String, dynamic>{'tags': tags});
   }
 
   Future<dynamic> removeTag(tagName) async {
     if (tagName == null || tagName.trim().length == 0) {
-      throw new Exception("tagName is invalid. Please provide a valid name for tag");
+      throw new Exception(
+          "tagName is invalid. Please provide a valid name for tag");
     }
-    return _channel.invokeMethod("removeTags", <String, dynamic> {
+    return _channel.invokeMethod("removeTags", <String, dynamic>{
       'tags': [tagName]
     });
   }
 
   Future<dynamic> removeTags(tags) async {
     if (tags == null || tags.length == 0) {
-      throw new Exception("tags is invalid. Please provide a valid tag for removeTags");
+      throw new Exception(
+          "tags is invalid. Please provide a valid tag for removeTags");
     }
-    return _channel.invokeMethod("removeTags", <String, dynamic> {
-      'tags': tags
-    });
+    return _channel.invokeMethod("removeTags", <String, dynamic>{'tags': tags});
   }
 
   //=============== subscription
 
   Future<String> subscribe(String channelName) async {
     if (channelName == null || channelName.trim().length == 0) {
-      throw new Exception("channelName is invalid. Please provide a valid name for subscribe");
+      throw new Exception(
+          "channelName is invalid. Please provide a valid name for subscribe");
     }
 
-    var params = <String, dynamic> {
-      'channelName': channelName
-    };
+    var params = <String, dynamic>{'channelName': channelName};
 
     return _channel.invokeMethod("subscribe", params);
   }
-  
+
   Future<String> unsubscribe(String channelName) async {
     if (channelName == null || channelName.trim().length == 0) {
-      throw new Exception("channelName is invalid. Please provide a valid name for unsubscribe");
+      throw new Exception(
+          "channelName is invalid. Please provide a valid name for unsubscribe");
     }
 
-    var params = <String, dynamic> {
-      'channelName': channelName
-    };
+    var params = <String, dynamic>{'channelName': channelName};
 
     return _channel.invokeMethod("unsubscribe", params);
   }
@@ -264,13 +258,14 @@ class ChabokPush {
     }
 
     _channel.invokeMethod("setOnMessageCallback");
-    
+
     this._onMessageHandler = callback;
   }
 
   void setOnNotificationOpenedHandler(Function callback) {
     if (callback == null) {
-      print("Callback parameter in setOnNotificationOpenedHandler method is required.");
+      print(
+          "Callback parameter in setOnNotificationOpenedHandler method is required.");
       return;
     }
 
@@ -281,7 +276,8 @@ class ChabokPush {
 
   void setOnShowNotificationHandler(Function callback) {
     if (callback == null) {
-      print("Callback parameter in setOnShowNotificationHandler method is required.");
+      print(
+          "Callback parameter in setOnShowNotificationHandler method is required.");
       return;
     }
 
@@ -327,10 +323,10 @@ class ChabokPush {
   Future<dynamic> _handleMethod(MethodCall call) async {
     if (call.method.contains('onMessageHandler')) {
       if (this._onMessageHandler != null) {
-         this._onMessageHandler(call.arguments);
-       }
+        this._onMessageHandler(call.arguments);
+      }
     } else if (call.method.contains('onConnectionHandler')) {
-      if(this._onConnectionHandler != null) {
+      if (this._onConnectionHandler != null) {
         this._onConnectionHandler(call.arguments);
       }
     } else if (call.method.contains('onShowNotificationHandler')) {
