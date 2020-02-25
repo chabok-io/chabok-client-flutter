@@ -1,5 +1,5 @@
 <p align="center"> 
-  <img src="https://raw.githubusercontent.com/chabok-io/chabok-client-flutter/master/flutter.svg?sanitizer=true">
+  <img src="https://raw.githubusercontent.com/chabok-io/chabok-client-flutter/master/flutter.svg">
 </p>
 
 # Chabok Push Client for Flutter
