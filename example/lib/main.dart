@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:chabokpush/chabokpush.dart';
-import 'package:chabokpush/chabokEvent.dart';
-import 'package:chabokpush/chabokMessage.dart';
+import 'package:chabokpush/ChabokEvent.dart';
+import 'package:chabokpush/ChabokMessage.dart';
 
 void main() => runApp(MyApp());
 
