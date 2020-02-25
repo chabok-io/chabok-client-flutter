@@ -1,5 +1,5 @@
 <p align="center"> 
-  <img src="https://github.com/chabok-io/chabok-client-flutter/blob/master/flutter.svg">
+  <img src="https://raw.githubusercontent.com/chabok-io/chabok-client-flutter/master/Flutter.png">
 </p>
 
 # Chabok Push Client for Flutter
@@ -103,8 +103,8 @@ For initializing the Chabok SDK in dart add bellow lines in `import` section:
 
 ```dart
 import 'package:chabokpush/chabokpush.dart';
-import 'package:chabokpush/chabokEvent.dart';
-import 'package:chabokpush/chabokMessage.dart';
+import 'package:chabokpush/ChabokEvent.dart';
+import 'package:chabokpush/ChabokMessage.dart';
 ```
 
 ### Login user
