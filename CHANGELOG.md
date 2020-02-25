@@ -1,3 +1,6 @@
+## 1.0.2
+- Fix Chabok flutter bridge warning issues.
+
 ## 1.0.1
 - Fix flutter warning issues.
 
