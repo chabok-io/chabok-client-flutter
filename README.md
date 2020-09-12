@@ -232,3 +232,44 @@ ChabokPush.shared.removeTag("YOUR_TAG")
       print('failed to remove tag with error: $error');
   });
 ```
+
+ ## Troubleshoot
+ I see `Errno::ENOENT - No such file or directory @ rb_sysopen - ./ios/Pods/Local Podspecs/chabokpush.podspec.json` when I build an **iOS** app.
+ 
+ Clean your project, remove ios/Podfile and Xcode workspace file entirely. (make sure you have backups just in case)
+ 
+ ```bash
+flutter clean
+rm -rf ios/Podfile ios/Podfile.lock pubspec.lock ios/Pods ios/Runner.xcworkspace
+```
+
+Revert to **cocoapods 1.7.5** temporarily.
+
+```bash
+gem uninstall cocoapods
+gem install cocoapods -v 1.7.5
+```
+
+Add the following line to the beginning of your iOS project's generated Podfile.
+
+```
+# Beginning of file
+use_frameworks!
+
+# The rest of the file contents
+# ...
+```
+
+Install pods.
+
+```bash
+pod repo update
+cd ios
+pod install
+cd ..
+```
+
+Retry your build.
+
+Once your build is successful, you can update cocoapods back to its latest version. If the error reoccurs, you will have to revert back to 1.7.5 and retry the steps.
+

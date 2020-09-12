@@ -95,7 +95,7 @@ FlutterResult _unsubscriptionResult;
         [self addTags:tags withResult:result];
     } else if ([@"removeTags" isEqualToString:method]) {
         NSArray<NSString *> *tags = arguments[@"tags"];
-        [self removeTag:tags withResult:result];
+        [self removeTags:tags withResult:result];
     } else if ([@"setUserAttributes" isEqualToString:method]) {
         [self setUserAttributes:arguments];
     } else if ([@"unsetUserAttributes" isEqualToString:method]) {
