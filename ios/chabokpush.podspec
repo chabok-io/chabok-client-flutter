@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'chabokpush'
-  s.version          = '1.0.2'
+  s.version          = '1.0.3'
   s.summary          = 'Chabok flutter plugin.'
   s.description      = <<-DESC
 Chabok provides your app with in-app messaging and easy geo-location features.
