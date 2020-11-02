@@ -11,7 +11,7 @@
 	<key>password</key>
 	<string>chabok-starter</string>
 	<key>realtime</key>
-	<true/>
+	<false/>
 	<key>pushNotification</key>
 	<true/>
 </dict>
