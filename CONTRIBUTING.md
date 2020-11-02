@@ -36,7 +36,7 @@ flutter pub get
 ### Notes:
 1) For developing Android native bridge use **Android Studio** IDE.
 
-2) Never change the `FlutterRegistrarResponder` class. When this class may change you need to support for spesific version on the Flutter. Their breaking changes always affects of this module.
+2) Never change the `FlutterRegistrarResponder` class. When this class may change you need to support for specific version on the Flutter. Their breaking changes always affects of this module.
 
 3) Flutter has two-way communication channel from the native module to Dart module and conversely. For use this service call `MethodChannel` class.
 
@@ -75,7 +75,7 @@ to:
 ```
 
 #### With breaking changes
-If it has some breaking changes first follow the bellow instruction. After that if breaking changes includes code changes, don't forget apply all changes in `ChabokpushPlugin.java` bridge class.
+If it has some breaking changes first follow the above instruction. After that if breaking changes includes code changes, don't forget apply all changes in `ChabokpushPlugin.java` bridge class.
 The `ChabokpushPlugin` is a simple bridge for connect the native module and Dart module.
 
 ## iOS contributing instructions:
@@ -120,5 +120,5 @@ to:
 And copy last version of iOS framework into the `/ios`:
 
 #### With breaking changes
-If it has some breaking changes first follow the bellow instruction. After that if breaking changes includes code changes, don't forget apply all changes in `/Classes/ChabokpushPlugin.m` bridge class.
+If it has some breaking changes first follow the above instruction. After that if breaking changes includes code changes, don't forget apply all changes in `/Classes/ChabokpushPlugin.m` bridge class.
 The `chabokpush.dart` is a simple bridge for connect the native module and Dart module.
