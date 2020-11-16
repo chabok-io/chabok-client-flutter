@@ -23,7 +23,7 @@ LICENSE
   s.public_header_files = 'Classes/**/*.h'
 
   s.dependency 'Flutter'
-  s.dependency "ChabokPush", "~> 2.2.0"
+  s.dependency "ChabokPush", "~> 2.2.1"
 
   s.platform = :ios, '8.0'
   s.static_framework = true
