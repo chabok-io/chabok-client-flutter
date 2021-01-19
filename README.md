@@ -3,7 +3,7 @@
 </p>
 
 # Chabok Push Client for Flutter
-[![pub package](https://img.shields.io/pub/v/chabokpush.svg)](https://pub.dev/packages/chabokpush_flutter)
+[![pub package](https://img.shields.io/pub/v/chabokpush_flutter.svg)](https://pub.dev/packages/chabokpush_flutter)
 
 Flutter wrapper for chabok library.
 This client library supports Flutter to use chabok push library.
