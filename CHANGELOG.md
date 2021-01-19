@@ -1,3 +1,8 @@
+## 2.0.0
+- Change: Renamed "chabokpush" to "chabokpush_flutter" , open your pubspec.yaml file and update chabokpush: ^1.0.4 to chabokpush_flutter: ^2.0.0
+- Update: Chabok iOS SDK ([v2.3.0](https://github.com/chabok-io/chabok-client-ios/releases/tag/v2.3.0))
+- Update: Chabok android SDK ([v3.5.0](https://github.com/chabok-io/chabok-client-android/releases/tag/v3.5.0))
+
 ## 1.0.4
 - Update Chabok iOS SDK ([v2.2.1](https://github.com/chabok-io/chabok-client-ios/releases/tag/v2.2.1))
 - Update Chabok android SDK ([v3.4.1](https://github.com/chabok-io/chabok-client-android/releases/tag/v3.4.1))

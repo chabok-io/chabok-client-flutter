@@ -1,4 +1,4 @@
-package com.chabokpush.flutter.chabokpush;
+package io.chabokpush.flutter;
 
 import android.content.Context;
 import android.net.Uri;

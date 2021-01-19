@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-// import 'package:chabokpush/chabokpush.dart';
+// import 'package:chabokpush_flutter/chabokpush.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('chabokpush');

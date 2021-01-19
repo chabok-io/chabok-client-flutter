@@ -1,4 +1,4 @@
-package com.chabokpush.flutter.chabokpush;
+package io.chabokpush.flutter;
 
 import android.app.Activity;
 import android.content.Context;
