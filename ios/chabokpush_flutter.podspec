@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'chabokpush_flutter'
-  s.version          = '2.0.0'
+  s.version          = '2.1.0'
   s.summary          = 'Chabok flutter plugin.'
   s.description      = <<-DESC
 Chabok provides your app with in-app messaging and easy geo-location features.
@@ -20,11 +20,10 @@ Chabok co
   s.public_header_files = 'Classes/**/*.h'
 
   s.dependency 'Flutter'
-  s.dependency "ChabokPush", "~> 2.3.0"
+  s.dependency "ChabokPush", "~> 2.4.0"
 
   s.platform = :ios, '8.0'
   s.static_framework = true
 
-  # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
+
 end

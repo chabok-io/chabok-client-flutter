@@ -35,7 +35,7 @@ android {
 
 dependencies {
     // api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    api 'com.adpdigital.push:chabok-lib:3.5.0'
+    api 'com.adpdigital.push:chabok-lib:3.6.0'
 
     implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
     implementation 'com.google.firebase:firebase-messaging:17.1.0'
