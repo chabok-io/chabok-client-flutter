@@ -1,3 +1,6 @@
+## 3.0.0
+- Change: Migrated to null safety.
+
 ## 2.1.0
 - Update: Chabok iOS SDK ([v2.4.0](https://github.com/chabok-io/chabok-client-ios/releases/tag/v2.4.0))
 - Update: Chabok android SDK ([v3.6.0](https://github.com/chabok-io/chabok-client-android/releases/tag/v3.6.0))

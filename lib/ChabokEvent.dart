@@ -1,9 +1,9 @@
 class ChabokEvent {
   dynamic data;
-  double revenue;
-  String currency;
+  double revenue = 0.0;
+  String? currency;
 
-  ChabokEvent(double revenue, [String currency]) {
+  ChabokEvent(double revenue, [String? currency]) {
     this.revenue = revenue;
     this.currency = currency;
   }

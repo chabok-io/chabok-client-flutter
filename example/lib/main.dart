@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
     super.initState();
 
     ChabokPush.shared.getUserId().then((userId) {
@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     // print('dispose() invoked.');
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -160,12 +160,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   _setUserAttributes() {
     ChabokPush.shared.setUserAttributes(<String, dynamic> {
-      'firstName': 'Farbod',
-      'lastName': "Samsamipour",
-      'age': 28,
-      'birthday': new DateTime(1992),
+      'firstName': 'Hossein',
+      'lastName': "Shooshtari",
+      'age': 27,
+      'birthday': new DateTime(1993),
       'isVIP': true,
-      'cars': ['bmw', 'mazda3']
+      'cars': ['bmw', 'mazda3'],
+      'friends': ['hussein', 'farbod']
     });
   }
 

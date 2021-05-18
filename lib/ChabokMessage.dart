@@ -1,8 +1,8 @@
 class ChabokMessage {
   dynamic data;
-  String userId;
-  String content;
-  String channel;
+  String userId = "";
+  String content = "";
+  String channel = "";
   dynamic notification;
 
   ChabokMessage(String userId, String channel, String content, [dynamic data]) {

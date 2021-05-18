@@ -128,12 +128,12 @@ ChabokPush.shared.logout();
 To set user attributes in the Chabok service use `setUserAttributes` method:
 ```dart
 ChabokPush.shared.setUserAttributes(<String, dynamic> {
-  'firstName': 'Farbod',
-  'lastName': "Samsamipour",
-  'age': 28,
-  'birthday': new DateTime(1992),
+  'firstName': 'Hossein',
+  'lastName': "Shooshtari",
+  'age': 27,
+  'birthday': new DateTime(1993),
   'isVIP': true,
-  'friends': ['hussein', 'habibi']
+  'friends': ['hussein', 'farbod']
 });
 ```
 

@@ -18,12 +18,12 @@ class ChabokPush {
       const MethodChannel('com.chabokpush.flutter/chabokpush');
 
   // event handlers
-  MessageHandler _onMessageHandler;
-  ConnectionHandler _onConnectionHandler;
-  ShowNotificationHandler _onShowNotificationHandler;
-  NotificationOpenedHandler _onNotificationOpenedHandler;
-  DeepLinkHandler _onDeepLinkHandler;
-  ReferralHandler _onReferralHandler;
+  MessageHandler? _onMessageHandler;
+  ConnectionHandler? _onConnectionHandler;
+  ShowNotificationHandler? _onShowNotificationHandler;
+  NotificationOpenedHandler? _onNotificationOpenedHandler;
+  DeepLinkHandler? _onDeepLinkHandler;
+  ReferralHandler? _onReferralHandler;
 
   ChabokPush._() {
     _channel.setMethodCallHandler(_handleMethod);
@@ -47,18 +47,18 @@ class ChabokPush {
     _channel.invokeMethod("logout");
   }
 
-  Future<String> getUserId() async {
+  Future<dynamic> getUserId() async {
     return _channel.invokeMethod("getUserId");
   }
 
-  Future<String> getInstallationId() async {
+  Future<dynamic> getInstallationId() async {
     return _channel.invokeMethod("getInstallationId");
   }
 
   //=============== Publish Messages
 
   publish(ChabokMessage message) {
-    var msgMap = <String, dynamic>{
+    var msgMap = <String, dynamic> {
       'userId': message.userId,
       'content': message.content
     };
@@ -79,7 +79,6 @@ class ChabokPush {
   }
 
   //=============== User Attributes
-
   setUserAttributes(dynamic attributes) {
     var _attrs = {};
     for (var key in attributes.keys) {
@@ -227,7 +226,7 @@ class ChabokPush {
 
   //=============== subscription
 
-  Future<String> subscribe(String channelName) async {
+  Future<dynamic> subscribe(String channelName) async {
     if (channelName == null || channelName.trim().length == 0) {
       throw new Exception(
           "channelName is invalid. Please provide a valid name for subscribe");
@@ -238,7 +237,7 @@ class ChabokPush {
     return _channel.invokeMethod("subscribe", params);
   }
 
-  Future<String> unsubscribe(String channelName) async {
+  Future<dynamic> unsubscribe(String channelName) async {
     if (channelName == null || channelName.trim().length == 0) {
       throw new Exception(
           "channelName is invalid. Please provide a valid name for unsubscribe");
@@ -262,10 +261,9 @@ class ChabokPush {
     this._onMessageHandler = callback;
   }
 
-  void setOnNotificationOpenedHandler(Function callback) {
+  void setOnNotificationOpenedHandler(dynamic callback) {
     if (callback == null) {
-      print(
-          "Callback parameter in setOnNotificationOpenedHandler method is required.");
+      print("Callback parameter in setOnNotificationOpenedHandler method is required.");
       return;
     }
 
@@ -274,10 +272,9 @@ class ChabokPush {
     this._onNotificationOpenedHandler = callback;
   }
 
-  void setOnShowNotificationHandler(Function callback) {
+  void setOnShowNotificationHandler(dynamic callback) {
     if (callback == null) {
-      print(
-          "Callback parameter in setOnShowNotificationHandler method is required.");
+      print("Callback parameter in setOnShowNotificationHandler method is required.");
       return;
     }
 
@@ -286,7 +283,7 @@ class ChabokPush {
     this._onShowNotificationHandler = callback;
   }
 
-  void setOnConnectionHandler(Function callback) {
+  void setOnConnectionHandler(dynamic callback) {
     if (callback == null) {
       print("Callback parameter in setOnConnectionHandler method is required.");
       return;
@@ -297,7 +294,7 @@ class ChabokPush {
     this._onConnectionHandler = callback;
   }
 
-  void setOnDeepLinkHandler(Function callback) {
+  void setOnDeepLinkHandler(dynamic callback) {
     if (callback == null) {
       print("Callback parameter in setOnDeepLinkHandler method is required.");
       return;
@@ -308,7 +305,7 @@ class ChabokPush {
     this._onDeepLinkHandler = callback;
   }
 
-  void setOnReferralHandler(Function callback) {
+  void setOnReferralHandler(dynamic callback) {
     if (callback == null) {
       print("Callback parameter in setOnReferralHandler method is required.");
       return;
@@ -323,27 +320,27 @@ class ChabokPush {
   Future<dynamic> _handleMethod(MethodCall call) async {
     if (call.method.contains('onMessageHandler')) {
       if (this._onMessageHandler != null) {
-        this._onMessageHandler(call.arguments);
+        this._onMessageHandler!(call.arguments);
       }
     } else if (call.method.contains('onConnectionHandler')) {
       if (this._onConnectionHandler != null) {
-        this._onConnectionHandler(call.arguments);
+        this._onConnectionHandler!(call.arguments);
       }
     } else if (call.method.contains('onShowNotificationHandler')) {
       if (this._onShowNotificationHandler != null) {
-        this._onShowNotificationHandler(call.arguments);
+        this._onShowNotificationHandler!(call.arguments);
       }
     } else if (call.method.contains('onNotificationOpenedHandler')) {
       if (this._onNotificationOpenedHandler != null) {
-        this._onNotificationOpenedHandler(call.arguments);
+        this._onNotificationOpenedHandler!(call.arguments);
       }
     } else if (call.method.contains('setOnDeepLinkHandler')) {
       if (this._onDeepLinkHandler != null) {
-        this._onDeepLinkHandler(call.arguments);
+        this._onDeepLinkHandler!(call.arguments);
       }
     } else if (call.method.contains('setOnReferralHandler')) {
       if (this._onReferralHandler != null) {
-        this._onReferralHandler(call.arguments);
+        this._onReferralHandler!(call.arguments);
       }
     }
     return null;

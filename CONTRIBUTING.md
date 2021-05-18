@@ -23,7 +23,7 @@
 
 ``` yml
 dependencies:
-  chabokpush: ^1.0.3
+  chabokpush_flutter: ^3.0.0
 ```
 Then use following command:
 
