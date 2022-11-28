@@ -1,0 +1,8 @@
+{
+    "appId": "adp-nms-push",
+    "apiKey": "2c8351ea5996d296886e660568eb1023cf86eece",
+    "username": "adp",
+    "password": "test",
+    "realtime": false,
+    "pushNotification": true
+}

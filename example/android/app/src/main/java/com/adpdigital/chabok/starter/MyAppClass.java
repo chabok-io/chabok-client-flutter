@@ -13,6 +13,6 @@ public class MyAppClass extends FlutterApplication {
         super.onCreate();
 
         AdpPushClient.setLogLevel(LogLevel.VERBOSE);
-        AdpPushClient.configureEnvironment(Environment.SANDBOX);
+        AdpPushClient.configureEnvironment(Environment.PRODUCTION);
     }
 }

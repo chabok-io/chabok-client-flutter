@@ -1,3 +1,6 @@
+## 3.1.0
+- Update: Chabok android SDK ([v3.7.0](https://github.com/chabok-io/chabok-client-android/releases/tag/v3.7.1))
+
 ## 3.0.0
 - Change: Migrated to null safety.
 

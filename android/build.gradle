@@ -4,7 +4,7 @@ version '1.0'
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -15,7 +15,7 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -35,9 +35,10 @@ android {
 
 dependencies {
     // api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    api 'com.adpdigital.push:chabok-lib:3.6.0'
+    api 'com.adpdigital.push:chabok-lib:3.7.1'
 
     implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
-    implementation 'com.google.firebase:firebase-messaging:17.1.0'
+    implementation 'com.google.firebase:firebase-messaging:22.0.0'
     implementation 'com.android.installreferrer:installreferrer:1.0'
+    implementation 'com.google.android.gms:play-services-base:16.0.1'
 }
