@@ -23,7 +23,7 @@
 
 ``` yml
 dependencies:
-  chabokpush_flutter: ^3.0.0
+  chabokpush_flutter: ^3.1.0
 ```
 Then use following command:
 
@@ -67,11 +67,11 @@ Just change Chabok Android SDK Version:
 
 from:
 ```
- api 'com.adpdigital.push:chabok-lib:3.4.0'
+ api 'com.adpdigital.push:chabok-lib:3.6.0'
 ```
 to:
 ```
- api 'com.adpdigital.push:chabok-lib:3.6.0'
+ api 'com.adpdigital.push:chabok-lib:3.7.1'
 ```
 
 #### With breaking changes
